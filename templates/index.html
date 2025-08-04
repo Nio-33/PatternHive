@@ -214,6 +214,28 @@
             left: 100%;
         }
 
+        /* Enhanced CTA button hover effect */
+        .cta-button {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 193, 7, 0.2), transparent);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .cta-button:hover::before {
+            transform: translateX(100%);
+        }
+
         /* === STATS GRID === */
         .stat-item {
             display: flex;
@@ -270,6 +292,19 @@
             0%, 100% { transform: scale(0.8); opacity: 0.6; }
             50% { transform: scale(1.1); opacity: 1; }
         }
+
+        /* Floating animation */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        .floating {
+            animation: float 8s ease-in-out infinite;
+        }
+
+
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -375,7 +410,7 @@
         <!-- === FEATURES SECTION === -->
         <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12" id="features-section">
             <!-- Pattern Detection -->
-            <div class="data-card text-center">
+            <div class="data-card text-center floating">
                 <div class="mb-4">
                     <div class="w-16 h-16 mx-auto bg-slate rounded-xl flex items-center justify-center">
                         <span class="text-3xl">🔍</span>
@@ -388,7 +423,7 @@
             </div>
 
             <!-- Real-time Extraction -->
-            <div class="data-card text-center">
+            <div class="data-card text-center floating" style="animation-delay: 1s;">
                 <div class="mb-4">
                     <div class="w-16 h-16 mx-auto bg-slate rounded-xl flex items-center justify-center">
                         <span class="text-3xl">⚡</span>
@@ -401,7 +436,7 @@
             </div>
 
             <!-- Data Visualization -->
-            <div class="data-card text-center">
+            <div class="data-card text-center floating" style="animation-delay: 2s;">
                 <div class="mb-4">
                     <div class="w-16 h-16 mx-auto bg-slate rounded-xl flex items-center justify-center">
                         <span class="text-3xl">📊</span>
@@ -414,7 +449,7 @@
             </div>
 
             <!-- AI-Assisted Parsing -->
-            <div class="data-card text-center">
+            <div class="data-card text-center floating" style="animation-delay: 3s;">
                 <div class="mb-4">
                     <div class="w-16 h-16 mx-auto bg-slate rounded-xl flex items-center justify-center">
                         <span class="text-3xl">🤖</span>
@@ -427,7 +462,7 @@
             </div>
 
             <!-- API Integration -->
-            <div class="data-card text-center">
+            <div class="data-card text-center floating" style="animation-delay: 4s;">
                 <div class="mb-4">
                     <div class="w-16 h-16 mx-auto bg-slate rounded-xl flex items-center justify-center">
                         <span class="text-3xl">🔗</span>
@@ -440,7 +475,7 @@
             </div>
 
             <!-- Pattern Evolution -->
-            <div class="data-card text-center">
+            <div class="data-card text-center floating" style="animation-delay: 5s;">
                 <div class="mb-4">
                     <div class="w-16 h-16 mx-auto bg-slate rounded-xl flex items-center justify-center">
                         <span class="text-3xl">🔄</span>
@@ -456,8 +491,8 @@
         <!-- === ACTION BUTTONS === -->
         <section class="text-center mb-12">
             <div class="flex flex-wrap justify-center gap-4">
-                <button id="process-text-btn" class="export-btn">⚡ Process Text</button>
-                <button id="clear-text-btn" class="export-btn">🗑️ Clear All</button>
+                <button id="process-text-btn" class="export-btn cta-button">⚡ Process Text</button>
+                <button id="clear-text-btn" class="export-btn cta-button">🗑️ Clear All</button>
             </div>
         </section>
 
@@ -550,7 +585,7 @@
             }
         });
 
-        // Process button
+        // Process button with demo state changes
         processBtn.addEventListener('click', () => {
             const text = input.value.trim();
             if (!text) {
@@ -558,20 +593,33 @@
                 return;
             }
             
+            // Demo button state changes
+            processBtn.textContent = 'PROCESSING...';
+            processBtn.style.background = 'linear-gradient(90deg, #4C6FFF, #4AE3EC)';
+            processBtn.style.border = '1px solid #4C6FFF';
+            
             processingSection.style.display = 'block';
             
-            // Simulate processing
             setTimeout(() => {
-                processingSection.style.display = 'none';
+                processBtn.innerHTML = 'DATA EXTRACTED!';
+                processBtn.style.background = 'linear-gradient(90deg, #10B981, #4AE3EC)';
+                processBtn.style.border = '1px solid #10B981';
                 
-                // Redirect to results (this will be handled by the original PatternHive logic)
-                if (window.patternHive && window.patternHive.processText) {
-                    window.patternHive.processText();
-                } else {
-                    showNotification('Processing complete! Redirecting to results...', 'success');
-                    // Fallback - you can implement actual processing here
-                }
-            }, 2000);
+                setTimeout(() => {
+                    processBtn.innerHTML = '⚡ Process Text';
+                    processBtn.style.background = 'transparent';
+                    processBtn.style.border = '1px solid #4AE3EC';
+                    processingSection.style.display = 'none';
+                    
+                    // Redirect to results (this will be handled by the original PatternHive logic)
+                    if (window.patternHive && window.patternHive.processText) {
+                        window.patternHive.processText();
+                    } else {
+                        showNotification('Processing complete! Redirecting to results...', 'success');
+                        // Fallback - you can implement actual processing here
+                    }
+                }, 2000);
+            }, 1500);
         });
 
         // Clear button
@@ -611,6 +659,56 @@
 
         // Initialize
         updateStats();
+
+        // Add hover effects to cards
+        const cards = document.querySelectorAll('.data-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-15px)';
+                card.style.boxShadow = '0 20px 40px rgba(255, 193, 7, 0.3)';
+            });
+            
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0)';
+                card.style.boxShadow = '0 10px 30px rgba(255, 193, 7, 0.2)';
+            });
+        });
+
+        // Mouse move effect for interactive cards
+        document.addEventListener('mousemove', (e) => {
+            const mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+            const mouseY = -(e.clientY / window.innerHeight) * 2 + 1;
+            
+            // Create subtle movement in feature cards
+            const featureCards = document.querySelectorAll('.data-card');
+            featureCards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const cardX = rect.left + rect.width / 2;
+                const cardY = rect.top + rect.height / 2;
+                
+                const dist = Math.sqrt(Math.pow(e.clientX - cardX, 2) + Math.pow(e.clientY - cardY, 2));
+                const intensity = Math.min(1, 300 / dist);
+                
+                // Apply subtle glow effect based on mouse proximity
+                const baseOpacity = 0.8;
+                const glowIntensity = 0.05 + intensity * 0.1;
+                card.style.boxShadow = `0 0 ${20 + intensity * 30}px rgba(74, 227, 236, ${glowIntensity})`;
+                
+                // Add subtle transform based on mouse position
+                const tiltX = (mouseY - (cardY / window.innerHeight * 2 - 1)) * 2;
+                const tiltY = (mouseX - (cardX / window.innerWidth * 2 - 1)) * 2;
+                
+                if (!card.matches(':hover')) {
+                    card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+                }
+            });
+            
+            // Add parallax effect to background
+            const frostOverlay = document.querySelector('.frost-overlay');
+            if (frostOverlay) {
+                frostOverlay.style.transform = `translate(${mouseX * 10}px, ${mouseY * 10}px)`;
+            }
+        });
     </script>
 </body>
 </html>
