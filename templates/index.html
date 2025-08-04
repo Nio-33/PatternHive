@@ -39,10 +39,55 @@
 
     <style>
         body {
-            background-color: #0D0D0D;
+            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+            background-attachment: fixed;
             color: #F6F8FA;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated starfield background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: sparkle 20s linear infinite;
+            z-index: -2;
+            opacity: 0.8;
+        }
+
+        /* Moving stars animation */
+        @keyframes sparkle {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200px); }
+        }
+
+        /* Nebula effect overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(120, 219, 255, 0.06) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
         }
 
         h1, h2, h3, .glitch-text {
@@ -85,7 +130,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            clip: rect(0, 0, 0, 0);
         }
 
         .glitch-text::before {
@@ -101,13 +145,13 @@
         }
 
         @keyframes glitch-1 {
-            0%, 90% { clip: rect(38px, 999px, 12px, 0); }
-            10% { clip: rect(4px, 999px, 88px, 0); }
+            0%, 90% { clip: rect(0px, 999px, 80px, 0); }
+            10% { clip: rect(20px, 999px, 60px, 0); }
         }
 
         @keyframes glitch-2 {
-            0%, 80% { clip: rect(15px, 999px, 33px, 0); }
-            90% { clip: rect(66px, 999px, 77px, 0); }
+            0%, 80% { clip: rect(10px, 999px, 70px, 0); }
+            90% { clip: rect(30px, 999px, 50px, 0); }
         }
 
         /* === INPUT AREA === */
@@ -129,26 +173,42 @@
 
         /* === DATA CARD === */
         .data-card {
-            background-color: #1A1B23;
-            border: 1px solid #334155;
+            background: linear-gradient(135deg, rgba(20, 24, 30, 0.6), rgba(15, 20, 25, 0.7)) !important;
+            backdrop-filter: blur(18px) saturate(220%);
+            -webkit-backdrop-filter: blur(18px) saturate(220%);
+            border: 1px solid rgba(74, 227, 236, 0.12);
             border-radius: 12px;
             padding: 1.5rem;
             color: #F6F8FA;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                0 10px 35px rgba(74, 227, 236, 0.12),
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.25);
         }
 
         .data-card:hover {
+            background: linear-gradient(135deg, rgba(20, 24, 30, 0.75), rgba(15, 20, 25, 0.8)) !important;
+            backdrop-filter: blur(22px) saturate(250%);
+            -webkit-backdrop-filter: blur(22px) saturate(250%);
             transform: translateY(-6px) rotateX(5deg);
-            box-shadow: 0 0 20px #4AE3EC30, 0 0 30px #4C6FFF20;
+            box-shadow: 
+                0 15px 45px rgba(74, 227, 236, 0.18),
+                0 8px 25px rgba(76, 111, 255, 0.12),
+                0 6px 20px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(74, 227, 236, 0.18);
         }
 
         .data-card::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234AE3EC' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='5' cy='5' r='1'/%3E%3C/g%3E%3C/svg%3E");
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234AE3EC' fill-opacity='0.02' fill-rule='evenodd'%3E%3Ccircle cx='5' cy='5' r='1'/%3E%3C/g%3E%3C/svg%3E");
             pointer-events: none;
         }
 
@@ -352,14 +412,123 @@
         .notification.notification-warning {
             border-color: #F59E0B;
         }
+
+        /* Tab styling */
+        .tab-button {
+            transition: all 0.3s ease;
+            background-color: rgba(55, 65, 81, 0.01) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.01);
+        }
+
+        .tab-button.active {
+            background-color: rgba(55, 65, 81, 0.03) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            transform: scale(1.05);
+            border: 1px solid rgba(74, 227, 236, 0.05);
+        }
+
+        .tab-button:hover {
+            background-color: rgba(75, 85, 99, 0.02) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        /* Upload area cursor */
+        #upload-file-content {
+            cursor: pointer;
+        }
+
+        /* Floating animations for tabbed interface */
+        .tab-button {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .tab-button:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .tab-button:nth-child(2) {
+            animation-delay: 1s;
+        }
+
+        /* Content area floating */
+        .bg-gray-800.rounded-2xl {
+            animation: float 8s ease-in-out infinite;
+            animation-delay: 2s;
+        }
+
+        /* Extract button floating */
+        #extract-btn {
+            animation: float 7s ease-in-out infinite;
+            animation-delay: 3s;
+        }
+
+        /* Lighting effects */
+        .tab-button {
+            box-shadow: 0 4px 15px rgba(74, 227, 236, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        .tab-button:hover {
+            box-shadow: 0 8px 25px rgba(74, 227, 236, 0.2);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .tab-button.active {
+            box-shadow: 0 8px 30px rgba(74, 227, 236, 0.3) !important;
+            border: 1px solid rgba(74, 227, 236, 0.2);
+        }
+
+        /* Content area glow */
+        .bg-gray-800.rounded-2xl {
+            background: linear-gradient(135deg, rgba(10, 13, 18, 0.75), rgba(5, 8, 12, 0.85)) !important;
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            box-shadow: 
+                0 10px 40px rgba(74, 227, 236, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(74, 227, 236, 0.08);
+            transition: all 0.4s ease;
+        }
+
+        .bg-gray-800.rounded-2xl:hover {
+            background: linear-gradient(135deg, rgba(10, 13, 18, 0.85), rgba(5, 8, 12, 0.9)) !important;
+            backdrop-filter: blur(20px) saturate(200%);
+            -webkit-backdrop-filter: blur(20px) saturate(200%);
+            box-shadow: 
+                0 15px 50px rgba(74, 227, 236, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 227, 236, 0.12);
+        }
+
+        /* Extract button glow */
+        #extract-btn {
+            background-color: rgba(31, 41, 55, 0.02) !important;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 6px 20px rgba(74, 227, 236, 0.15);
+            border: 1px solid rgba(74, 227, 236, 0.1);
+            transition: all 0.4s ease;
+        }
+
+        #extract-btn:hover {
+            background-color: rgba(31, 41, 55, 0.05) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(74, 227, 236, 0.25);
+            border: 1px solid rgba(74, 227, 236, 0.15);
+            transform: translateY(-3px);
+        }
     </style>
 </head>
 <body class="charcoal text-ice-white min-h-screen">
 
-    <!-- Frost Depth Overlay -->
-    <div class="frost-overlay"></div>
-
-    <div class="content px-6 py-12 max-w-6xl mx-auto">
+    <div class="content px-6 py-12 max-w-6xl mx-auto relative z-10">
 
         <!-- === HERO SECTION === -->
         <header class="text-center mb-12">
@@ -367,35 +536,48 @@
                 <h1 class="glitch-text text-5xl mb-2 block w-full" data-text="PATTERNHIVE">PATTERNHIVE</h1>
                 <p class="glitch-text text-xl opacity-90 mb-6 block w-full" data-text="Parse • Extract • Analyze">Parse • Extract • Analyze</p>
             </div>
-            <div class="mt-8 flex justify-center">
-                <div class="w-6 h-10 border-2 border-electric-blue rounded-full flex justify-center">
-                    <div class="w-1 h-3 bg-electric-blue rounded-full mt-2 animate-bounce"></div>
-                </div>
-            </div>
         </header>
 
-        <!-- === INPUT ZONE === -->
+        <!-- === TABBED INTERFACE === -->
         <section class="mb-12">
-            <h2 class="text-2xl mb-4">Input Text</h2>
-            <textarea 
-                id="text-input" 
-                class="textarea-glow w-full h-40 resize-none" 
-                placeholder="Paste logs, resumes, scraped content, or any unstructured text here..."></textarea>
-            
-            <div class="flex flex-wrap gap-4 mt-4 text-sm opacity-80">
-                <span>Chars: <span id="charCount" class="counter">0</span></span>
-                <span>Words: <span id="wordCount" class="counter">0</span></span>
-                <span>Lines: <span id="lineCount" class="counter">0</span></span>
+            <!-- Tab Buttons -->
+            <div class="flex gap-4 mb-6 justify-center">
+                <button id="input-text-tab" class="tab-button active px-8 py-4 rounded-full bg-gray-800 text-white text-xl font-medium">
+                    Input Text
+                </button>
+                <button id="upload-file-tab" class="tab-button px-8 py-4 rounded-full bg-gray-800 text-white text-xl font-medium">
+                    Upload File
+                </button>
             </div>
-            
-            <!-- File Upload Option -->
-            <div class="mt-6 p-6 upload-zone rounded-xl" id="upload-area">
-                <input type="file" id="file-input" class="hidden" accept=".txt,.pdf,.docx,.doc,.xlsx,.xls,.csv">
-                <div class="text-center cursor-pointer" onclick="document.getElementById('file-input').click()">
-                    <div class="text-4xl mb-2">📁</div>
-                    <p class="text-cool-gray">Drop files here or <span class="text-electric-blue underline">browse</span></p>
-                    <p class="text-sm text-cool-gray mt-1">Supports: PDF, DOCX, Excel, TXT, CSV (max 16MB)</p>
+
+            <!-- Tab Content Area -->
+            <div class="bg-gray-800 rounded-2xl p-8 min-h-96 mb-6">
+                <!-- Input Text Tab Content -->
+                <div id="input-text-content" class="tab-content">
+                    <textarea 
+                        id="text-input" 
+                        class="w-full h-80 bg-transparent text-white placeholder-gray-400 border-none outline-none resize-none text-lg" 
+                        placeholder="Paste logs, resumes, scraped content, or any unstructured text here..."></textarea>
                 </div>
+
+                <!-- Upload File Tab Content -->
+                <div id="upload-file-content" class="tab-content hidden">
+                    <div class="text-center h-80 flex items-center justify-center">
+                        <div>
+                            <div class="text-6xl mb-4">📁</div>
+                            <p class="text-gray-300 text-xl mb-2">Drop files here or browse</p>
+                            <p class="text-gray-400">Supports: PDF, DOCX, Excel, TXT, CSV (max 16MB)</p>
+                        </div>
+                    </div>
+                    <input type="file" id="file-input" class="hidden" accept=".txt,.pdf,.docx,.doc,.xlsx,.xls,.csv">
+                </div>
+            </div>
+
+            <!-- Extract Button -->
+            <div class="text-center">
+                <button id="extract-btn" class="px-12 py-4 rounded-full bg-gray-800 text-white text-xl font-medium hover:bg-gray-700 transition-colors">
+                    Extract File
+                </button>
             </div>
         </section>
 
@@ -488,13 +670,6 @@
             </div>
         </section>
 
-        <!-- === ACTION BUTTONS === -->
-        <section class="text-center mb-12">
-            <div class="flex flex-wrap justify-center gap-4">
-                <button id="process-text-btn" class="export-btn cta-button">⚡ Process Text</button>
-                <button id="clear-text-btn" class="export-btn cta-button">🗑️ Clear All</button>
-            </div>
-        </section>
 
     </div>
 
@@ -509,35 +684,104 @@
     <div id="notification-container" class="fixed top-4 right-4 z-50" aria-live="polite"></div>
 
     <!-- Scripts -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <script>
         // DOM Elements
         const input = document.getElementById('text-input');
-        const charCount = document.getElementById('charCount');
-        const wordCount = document.getElementById('wordCount');
-        const lineCount = document.getElementById('lineCount');
+        const inputTextTab = document.getElementById('input-text-tab');
+        const uploadFileTab = document.getElementById('upload-file-tab');
+        const inputTextContent = document.getElementById('input-text-content');
+        const uploadFileContent = document.getElementById('upload-file-content');
+        const extractBtn = document.getElementById('extract-btn');
 
-        // Remove references to old extraction preview elements
-
-        const uploadArea = document.getElementById('upload-area');
         const fileInput = document.getElementById('file-input');
-        const processBtn = document.getElementById('process-text-btn');
-        const clearBtn = document.getElementById('clear-text-btn');
         const processingSection = document.getElementById('processing-section');
 
-        // Regex Patterns
-        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-        const phoneRegex = /(?:\+?(\d{1,3}))?[-.\s]?\(?(\d{3})\)?[-.\s]?(\d{3})[-.\s]?(\d{4})/g;
-        const nameRegex = /[A-Z][a-z]{2,}\s+[A-Z][a-z]{2,}/g;
-
-        // Update Stats
-        function updateStats() {
-            const text = input.value || '';
+        // Tab switching functionality
+        function switchTab(activeTab, activeContent, inactiveTab, inactiveContent) {
+            // Update tab buttons
+            activeTab.classList.add('active');
+            inactiveTab.classList.remove('active');
             
-            // Character stats only
-            charCount.textContent = text.length;
-            wordCount.textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
-            lineCount.textContent = text.split('\n').length;
+            // Update content visibility
+            activeContent.classList.remove('hidden');
+            inactiveContent.classList.add('hidden');
+        }
+
+        // Tab event listeners
+        inputTextTab.addEventListener('click', () => {
+            switchTab(inputTextTab, inputTextContent, uploadFileTab, uploadFileContent);
+        });
+
+        uploadFileTab.addEventListener('click', () => {
+            switchTab(uploadFileTab, uploadFileContent, inputTextTab, inputTextContent);
+        });
+
+        // Make upload file content clickable
+        uploadFileContent.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // Extract button functionality
+        extractBtn.addEventListener('click', async () => {
+            const currentTab = inputTextTab.classList.contains('active') ? 'text' : 'file';
+            
+            if (currentTab === 'text') {
+                const text = input.value.trim();
+                if (!text) {
+                    showNotification('Please enter some text to extract', 'warning');
+                    return;
+                }
+                
+                // Process text
+                await processText(text);
+            } else {
+                // Check if file is selected
+                if (!fileInput.files.length) {
+                    showNotification('Please select a file to extract', 'warning');
+                    return;
+                }
+                
+                // Process file
+                await handleFileUpload(fileInput.files[0]);
+            }
+        });
+
+        // Process text function
+        async function processText(text) {
+            extractBtn.textContent = 'Processing...';
+            extractBtn.disabled = true;
+            processingSection.style.display = 'block';
+            
+            try {
+                const response = await fetch('/api/extract', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ text: text })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    localStorage.setItem('patternhive_session', result.session_id);
+                    localStorage.setItem('patternhive_text_input', text);
+                    
+                    showNotification('Text processed successfully! Redirecting...', 'success');
+                    setTimeout(() => {
+                        window.location.href = '/results';
+                    }, 1500);
+                } else {
+                    showNotification(result.error || 'Error processing text', 'error');
+                }
+            } catch (error) {
+                console.error('Processing error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            } finally {
+                extractBtn.textContent = 'Extract File';
+                extractBtn.disabled = false;
+                processingSection.style.display = 'none';
+            }
         }
 
         // Notification system
@@ -585,52 +829,10 @@
             }
         });
 
-        // Process button with demo state changes
-        processBtn.addEventListener('click', () => {
-            const text = input.value.trim();
-            if (!text) {
-                showNotification('Please enter some text to process', 'warning');
-                return;
-            }
-            
-            // Demo button state changes
-            processBtn.textContent = 'PROCESSING...';
-            processBtn.style.background = 'linear-gradient(90deg, #4C6FFF, #4AE3EC)';
-            processBtn.style.border = '1px solid #4C6FFF';
-            
-            processingSection.style.display = 'block';
-            
-            setTimeout(() => {
-                processBtn.innerHTML = 'DATA EXTRACTED!';
-                processBtn.style.background = 'linear-gradient(90deg, #10B981, #4AE3EC)';
-                processBtn.style.border = '1px solid #10B981';
-                
-                setTimeout(() => {
-                    processBtn.innerHTML = '⚡ Process Text';
-                    processBtn.style.background = 'transparent';
-                    processBtn.style.border = '1px solid #4AE3EC';
-                    processingSection.style.display = 'none';
-                    
-                    // Redirect to results (this will be handled by the original PatternHive logic)
-                    if (window.patternHive && window.patternHive.processText) {
-                        window.patternHive.processText();
-                    } else {
-                        showNotification('Processing complete! Redirecting to results...', 'success');
-                        // Fallback - you can implement actual processing here
-                    }
-                }, 2000);
-            }, 1500);
-        });
-
-        // Clear button
-        clearBtn.addEventListener('click', () => {
-            input.value = '';
-            updateStats();
-            showNotification('Text cleared', 'success');
-        });
 
         // Handle file upload
-        function handleFileUpload(file) {
+        async function handleFileUpload(file) {
+            // Client-side validation
             if (file.size > 16 * 1024 * 1024) {
                 showNotification('File too large. Maximum size is 16MB.', 'error');
                 return;
@@ -643,22 +845,78 @@
                 return;
             }
             
+            // Update button state
+            extractBtn.textContent = 'Processing...';
+            extractBtn.disabled = true;
             processingSection.style.display = 'block';
+            showNotification(`Processing "${file.name}"...`, 'info');
             
-            // Handle file upload (this will be handled by the original PatternHive logic)
-            if (window.patternHive && window.patternHive.handleFileUpload) {
-                window.patternHive.handleFileUpload(file);
-            } else {
-                showNotification(`File "${file.name}" uploaded successfully!`, 'success');
+            try {
+                // Create FormData for file upload
+                const formData = new FormData();
+                formData.append('file', file);
+                
+                // Send to backend API
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Success - store session ID and redirect to results
+                    localStorage.setItem('patternhive_session', result.session_id);
+                    localStorage.setItem('patternhive_filename', result.filename);
+                    
+                    showNotification(`Successfully processed "${file.name}"! Redirecting to results...`, 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = '/results';
+                    }, 1500);
+                    
+                } else {
+                    // Error from server
+                    showNotification(result.error || 'Error processing file', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                showNotification('Network error. Please try again.', 'error');
+            } finally {
+                extractBtn.textContent = 'Extract File';
+                extractBtn.disabled = false;
                 processingSection.style.display = 'none';
             }
         }
 
-        // Live update
-        input.addEventListener('input', updateStats);
+        // Drag and drop functionality
+        uploadFileContent.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadFileContent.classList.add('bg-gray-700');
+        });
 
-        // Initialize
-        updateStats();
+        uploadFileContent.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadFileContent.classList.remove('bg-gray-700');
+        });
+
+        uploadFileContent.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadFileContent.classList.remove('bg-gray-700');
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                fileInput.files = e.dataTransfer.files;
+                showNotification(`File "${files[0].name}" selected`, 'success');
+            }
+        });
+
+        // File input change handler
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                showNotification(`File "${e.target.files[0].name}" selected`, 'success');
+            }
+        });
 
         // Add hover effects to cards
         const cards = document.querySelectorAll('.data-card');
