@@ -524,6 +524,30 @@
             border: 1px solid rgba(74, 227, 236, 0.15);
             transform: translateY(-3px);
         }
+
+        /* File notification card */
+        .file-notification-card {
+            background: linear-gradient(135deg, rgba(10, 13, 18, 0.75), rgba(5, 8, 12, 0.85));
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            box-shadow: 
+                0 8px 32px rgba(74, 227, 236, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.5s ease-out;
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
 <body class="charcoal text-ice-white min-h-screen">
@@ -573,7 +597,13 @@
                 </div>
             </div>
 
-            <!-- Extract Button -->
+            <!-- File Upload Success Notification -->
+            <div id="file-notification" class="hidden mb-6 text-center">
+                <div class="text-electric-blue font-medium mb-1" id="file-notification-name">document.pdf</div>
+                <div class="text-electric-blue text-sm">
+                    <span id="file-notification-size">2.5 MB</span>
+                </div>
+            </div>
             <div class="text-center">
                 <button id="extract-btn" class="px-12 py-4 rounded-full bg-gray-800 text-white text-xl font-medium hover:bg-gray-700 transition-colors">
                     Extract File
@@ -695,6 +725,9 @@
 
         const fileInput = document.getElementById('file-input');
         const processingSection = document.getElementById('processing-section');
+        const fileNotification = document.getElementById('file-notification');
+        const fileNotificationName = document.getElementById('file-notification-name');
+        const fileNotificationSize = document.getElementById('file-notification-size');
 
         // Tab switching functionality
         function switchTab(activeTab, activeContent, inactiveTab, inactiveContent) {
@@ -716,6 +749,7 @@
             switchTab(uploadFileTab, uploadFileContent, inputTextTab, inputTextContent);
         });
 
+
         // Make upload file content clickable
         uploadFileContent.addEventListener('click', () => {
             fileInput.click();
@@ -724,6 +758,9 @@
         // Extract button functionality
         extractBtn.addEventListener('click', async () => {
             const currentTab = inputTextTab.classList.contains('active') ? 'text' : 'file';
+            
+            // Hide file notification when processing starts
+            hideFileNotification();
             
             if (currentTab === 'text') {
                 const text = input.value.trim();
@@ -784,6 +821,40 @@
             }
         }
 
+        // File notification system
+        function showFileNotification(file) {
+            // Format file size
+            const formatFileSize = (bytes) => {
+                if (bytes === 0) return '0 Bytes';
+                const k = 1024;
+                const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+                const i = Math.floor(Math.log(bytes) / Math.log(k));
+                return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+            };
+
+            // Get file format
+            const getFileFormat = (filename) => {
+                const extension = filename.split('.').pop().toUpperCase();
+                return extension;
+            };
+
+            // Update notification content
+            if (fileNotificationName) fileNotificationName.textContent = file.name;
+            if (fileNotificationSize) fileNotificationSize.textContent = formatFileSize(file.size);
+
+            // Show notification - will stay visible until Extract button is clicked
+            if (fileNotification) {
+                fileNotification.classList.remove('hidden');
+            }
+        }
+
+        // Hide file notification
+        function hideFileNotification() {
+            if (fileNotification) {
+                fileNotification.classList.add('hidden');
+            }
+        }
+
         // Notification system
         function showNotification(message, type = 'info') {
             const notification = document.createElement('div');
@@ -804,28 +875,12 @@
             }, 3000);
         }
 
-        // File upload handling
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = Array.from(e.dataTransfer.files);
-            if (files.length > 0) {
-                handleFileUpload(files[0]);
-            }
-        });
-
+        // File input change handler
         fileInput.addEventListener('change', (e) => {
             if (e.target.files.length > 0) {
-                handleFileUpload(e.target.files[0]);
+                const file = e.target.files[0];
+                showFileNotification(file);
             }
         });
 
@@ -907,16 +962,10 @@
             const files = Array.from(e.dataTransfer.files);
             if (files.length > 0) {
                 fileInput.files = e.dataTransfer.files;
-                showNotification(`File "${files[0].name}" selected`, 'success');
+                showFileNotification(files[0]);
             }
         });
 
-        // File input change handler
-        fileInput.addEventListener('change', (e) => {
-            if (e.target.files.length > 0) {
-                showNotification(`File "${e.target.files[0].name}" selected`, 'success');
-            }
-        });
 
         // Add hover effects to cards
         const cards = document.querySelectorAll('.data-card');
