@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, render_template, session
+from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import os
 import uuid
@@ -11,6 +11,9 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 CORS(app)
+
+# In-memory session storage (for production, use Redis or database)
+sessions = {}
 
 # Initialize utilities
 extractor = TextExtractor()
@@ -47,7 +50,7 @@ def extract_data():
         
         # Store results in session for export
         session_id = str(uuid.uuid4())
-        session[session_id] = {
+        sessions[session_id] = {
             'results': results,
             'timestamp': datetime.now().isoformat()
         }
@@ -92,7 +95,7 @@ def upload_file():
         
         # Store results in session
         session_id = str(uuid.uuid4())
-        session[session_id] = {
+        sessions[session_id] = {
             'results': results,
             'filename': file.filename,
             'timestamp': datetime.now().isoformat()
@@ -116,13 +119,18 @@ def upload_file():
 def export_data(format_type, session_id):
     """Export extracted data in specified format"""
     try:
-        if session_id not in session:
+        if session_id not in sessions:
             return jsonify({'error': 'Session not found'}), 404
         
-        results = session[session_id]['results']
+        results = sessions[session_id]['results']
         
         if format_type == 'json':
-            return jsonify(results)
+            import json
+            json_data = json.dumps(results, indent=2)
+            return json_data, 200, {
+                'Content-Type': 'application/json',
+                'Content-Disposition': f'attachment; filename=extracted_data_{session_id}.json'
+            }
         elif format_type == 'csv':
             csv_data = extractor.to_csv(results)
             return csv_data, 200, {

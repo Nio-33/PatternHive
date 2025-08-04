@@ -1,445 +1,285 @@
-/**
- * PatternHive - Results Page Logic
- * Handles result display, filtering, and export functionality
- */
+document.addEventListener('DOMContentLoaded', async () => {
+    const sessionIdEl = document.getElementById('session-id');
+    const statsGridEl = document.getElementById('stats-grid');
+    const filterControlsEl = document.getElementById('filter-controls');
+    const resultsContainerEl = document.getElementById('results-container');
+    const emptyStateEl = document.getElementById('empty-state');
 
-class ResultsPage {
-    constructor() {
-        this.sessionId = null;
-        this.currentResults = null;
-        this.currentFilter = 'all';
-        
-        // DOM elements
-        this.elements = {
-            // Session info
-            sessionId: document.getElementById('session-id'),
-            processedTime: document.getElementById('processed-time'),
-            filename: document.getElementById('filename'),
-            filenameItem: document.getElementById('filename-item'),
-            
-            // Statistics
-            emailCount: document.getElementById('email-count'),
-            phoneCount: document.getElementById('phone-count'),
-            nameCount: document.getElementById('name-count'),
-            
-            // Badges
-            emailBadge: document.getElementById('email-badge'),
-            phoneBadge: document.getElementById('phone-badge'),
-            nameBadge: document.getElementById('name-badge'),
-            
-            // Result grids
-            emailGrid: document.getElementById('email-grid'),
-            phoneGrid: document.getElementById('phone-grid'),
-            nameGrid: document.getElementById('name-grid'),
-            
-            // Categories
-            emailResults: document.getElementById('email-results'),
-            phoneResults: document.getElementById('phone-results'),
-            nameResults: document.getElementById('name-results'),
-            
-            // Controls
-            filterButtons: document.querySelectorAll('.filter-btn'),
-            exportJsonBtn: document.getElementById('export-json-btn'),
-            exportCsvBtn: document.getElementById('export-csv-btn'),
-            exportReportBtn: document.getElementById('export-report-btn'),
-            printResultsBtn: document.getElementById('print-results-btn'),
-            
-            // States
-            loadingOverlay: document.getElementById('loading-overlay'),
-            emptyState: document.getElementById('empty-state'),
-            resultsSection: document.getElementById('results-section'),
-            exportSection: document.getElementById('export-section'),
-            notificationContainer: document.getElementById('notification-container')
-        };
-        
-        this.init();
+    // Get session ID from localStorage (set by homepage)
+    const sessionId = localStorage.getItem('patternhive_session');
+    const filename = localStorage.getItem('patternhive_filename');
+    const textInput = localStorage.getItem('patternhive_text_input');
+
+    if (!sessionId) {
+        showEmptyState();
+        return;
     }
-    
-    init() {
-        this.getSessionIdFromUrl();
-        this.setupEventListeners();
-        this.loadResults();
+
+    // Session ID element removed from display
+
+    try {
+        // Fetch results from backend using session
+        const response = await fetch(`/api/export/json/${sessionId}`);
         
-        console.log('Results page initialized');
-    }
-    
-    getSessionIdFromUrl() {
-        const urlParams = new URLSearchParams(window.location.search);
-        this.sessionId = urlParams.get('session');
-        
-        if (!this.sessionId) {
-            this.showEmptyState();
-            return;
+        if (!response.ok) {
+            throw new Error('Session not found or expired');
         }
         
-        this.elements.sessionId.textContent = this.sessionId;
-    }
-    
-    setupEventListeners() {
-        // Filter buttons
-        this.elements.filterButtons.forEach(btn => {
-            btn.addEventListener('click', () => this.handleFilter(btn.dataset.filter));
-        });
-        
-        // Export buttons
-        this.elements.exportJsonBtn.addEventListener('click', () => this.exportData('json'));
-        this.elements.exportCsvBtn.addEventListener('click', () => this.exportData('csv'));
-        this.elements.exportReportBtn.addEventListener('click', () => this.exportData('report'));
-        
-        // Print button
-        this.elements.printResultsBtn.addEventListener('click', () => this.printResults());
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.ctrlKey || e.metaKey) {
-                switch (e.key) {
-                    case 'p':
-                        e.preventDefault();
-                        this.printResults();
-                        break;
-                    case 's':
-                        e.preventDefault();
-                        this.exportData('json');
-                        break;
-                }
-            }
-        });
-    }
-    
-    async loadResults() {
-        if (!this.sessionId) return;
-        
-        this.showLoading();
-        
-        try {
-            // Try to get results from localStorage first (for recently processed data)
-            const cachedResults = localStorage.getItem(`patternhive_session_${this.sessionId}`);
-            
-            if (cachedResults) {
-                const data = JSON.parse(cachedResults);
-                this.displayResults(data.results, data.stats, data.filename);
-                this.elements.processedTime.textContent = new Date(data.timestamp).toLocaleString();
-                if (data.filename) {
-                    this.elements.filename.textContent = data.filename;
-                    this.elements.filenameItem.style.display = 'flex';
-                }
-            } else {
-                // If not cached, show message about session expiry
-                this.showEmptyState();
-                this.showNotification('Session data not found. Results are only available during the current browser session.', 'warning');
-                return;
-            }
-            
-        } catch (error) {
-            console.error('Error loading results:', error);
-            this.showNotification('Error loading results: ' + error.message, 'error');
-            this.showEmptyState();
-        } finally {
-            this.hideLoading();
-        }
-    }
-    
-    displayResults(results, stats, filename = null) {
-        this.currentResults = results;
-        
-        // Update statistics
-        this.animateCounter(this.elements.emailCount, stats.emails_found);
-        this.animateCounter(this.elements.phoneCount, stats.phones_found);
-        this.animateCounter(this.elements.nameCount, stats.names_found);
-        
-        // Update badges
-        this.elements.emailBadge.textContent = stats.emails_found;
-        this.elements.phoneBadge.textContent = stats.phones_found;
-        this.elements.nameBadge.textContent = stats.names_found;
+        const results = await response.json();
         
         // Display results
-        this.displayEmailResults(results.emails);
-        this.displayPhoneResults(results.phones);
-        this.displayNameResults(results.names);
+        displayStats(results, filename, textInput);
+        displayResults(results);
+        setupFilters();
+        setupExportButtons(sessionId);
         
-        // Show results section
-        this.elements.emptyState.style.display = 'none';
-        this.elements.resultsSection.style.display = 'block';
-        this.elements.exportSection.style.display = 'block';
-        
-        // Set up animations
-        this.setupResultAnimations();
+    } catch (error) {
+        console.error('Error loading results:', error);
+        showEmptyState();
     }
-    
-    displayEmailResults(emails) {
-        this.elements.emailGrid.innerHTML = '';
+
+    function displayStats(results, filename, textInput) {
+        // Display stats grid with clean minimal styling
+        statsGridEl.innerHTML = `
+            <div class="data-card text-center floating">
+                <div class="text-3xl mb-4">📧</div>
+                <h3 class="text-xl font-orbitron">${results.emails ? results.emails.length : 0} Emails</h3>
+            </div>
+            <div class="data-card text-center floating" style="animation-delay: 1s;">
+                <div class="text-3xl mb-4">📞</div>
+                <h3 class="text-xl font-orbitron">${results.phones ? results.phones.length : 0} Phone Numbers</h3>
+            </div>
+            <div class="data-card text-center floating" style="animation-delay: 2s;">
+                <div class="text-3xl mb-4">👤</div>
+                <h3 class="text-xl font-orbitron">${results.names ? results.names.length : 0} Names</h3>
+            </div>
+        `;
         
-        if (emails.length === 0) {
-            this.elements.emailResults.style.display = 'none';
-            return;
-        }
+        // Display source info
+        const sourceInfo = filename ? `File: ${filename}` : 'Text Input';
+        const sourceElement = document.createElement('div');
+        sourceElement.className = 'text-center mb-8 text-cool-gray floating-source';
+        sourceElement.innerHTML = `<p>📄 Source: <span class="text-ice-white">${sourceInfo}</span></p>`;
+        statsGridEl.parentNode.insertBefore(sourceElement, statsGridEl.nextSibling);
+    }
+
+    function displayResults(results) {
+        let html = '';
         
-        this.elements.emailResults.style.display = 'block';
-        
-        emails.forEach((email, index) => {
-            const card = this.createResultCard({
-                value: email.email,
-                meta: email.domain,
-                status: email.valid ? 'valid' : 'invalid',
-                type: 'email'
+        // Emails section
+        if (results.emails && results.emails.length > 0) {
+            html += `
+                <div class="results-section mb-8" data-type="emails">
+                    <h3 class="text-2xl font-orbitron mb-4 text-electric-blue">📧 Email Addresses</h3>
+                    <div class="grid gap-4">
+            `;
+            
+            results.emails.forEach((email, index) => {
+                const emailValue = typeof email === 'object' ? email.email : email;
+                const domain = typeof email === 'object' ? email.domain : '';
+                const valid = typeof email === 'object' ? email.valid : true;
+                const validityText = valid ? 'Valid' : 'Invalid';
+                const validityClass = valid ? 'high' : 'low';
+                html += `
+                    <div class="bg-slate border border-translucent-blue rounded-lg p-4 hover:border-electric-blue transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-mono text-ice-white">${emailValue}</span>
+                                ${domain ? `<div class="text-xs text-cool-gray mt-1">Domain: ${domain}</div>` : ''}
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full ${getConfidenceBadgeClass(validityClass)}">${validityText}</span>
+                        </div>
+                    </div>
+                `;
             });
             
-            card.style.animationDelay = `${index * 0.1}s`;
-            this.elements.emailGrid.appendChild(card);
-        });
-    }
-    
-    displayPhoneResults(phones) {
-        this.elements.phoneGrid.innerHTML = '';
-        
-        if (phones.length === 0) {
-            this.elements.phoneResults.style.display = 'none';
-            return;
+            html += `</div></div>`;
         }
         
-        this.elements.phoneResults.style.display = 'block';
-        
-        phones.forEach((phone, index) => {
-            const card = this.createResultCard({
-                value: phone.formatted,
-                meta: phone.country || 'Unknown',
-                status: phone.valid ? 'valid' : 'invalid',
-                type: 'phone'
+        // Phones section
+        if (results.phones && results.phones.length > 0) {
+            html += `
+                <div class="results-section mb-8" data-type="phones">
+                    <h3 class="text-2xl font-orbitron mb-4 text-electric-blue">📞 Phone Numbers</h3>
+                    <div class="grid gap-4">
+            `;
+            
+            results.phones.forEach((phone, index) => {
+                const phoneValue = typeof phone === 'object' ? phone.formatted : phone;
+                const country = typeof phone === 'object' ? phone.country : '';
+                const valid = typeof phone === 'object' ? phone.valid : true;
+                const validityText = valid ? 'Valid' : 'Unverified';
+                const validityClass = valid ? 'high' : 'medium';
+                html += `
+                    <div class="bg-slate border border-translucent-blue rounded-lg p-4 hover:border-electric-blue transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-mono text-ice-white">${phoneValue}</span>
+                                ${country ? `<div class="text-xs text-cool-gray mt-1">Country: ${country}</div>` : ''}
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full ${getConfidenceBadgeClass(validityClass)}">${validityText}</span>
+                        </div>
+                    </div>
+                `;
             });
             
-            card.style.animationDelay = `${index * 0.1}s`;
-            this.elements.phoneGrid.appendChild(card);
-        });
-    }
-    
-    displayNameResults(names) {
-        this.elements.nameGrid.innerHTML = '';
-        
-        if (names.length === 0) {
-            this.elements.nameResults.style.display = 'none';
-            return;
+            html += `</div></div>`;
         }
         
-        this.elements.nameResults.style.display = 'block';
-        
-        names.forEach((name, index) => {
-            const card = this.createResultCard({
-                value: name.name,
-                meta: name.type.replace('_', ' '),
-                confidence: name.confidence,
-                type: 'name'
+        // Names section
+        if (results.names && results.names.length > 0) {
+            html += `
+                <div class="results-section mb-8" data-type="names">
+                    <h3 class="text-2xl font-orbitron mb-4 text-electric-blue">👤 Full Names</h3>
+                    <div class="grid gap-4">
+            `;
+            
+            results.names.forEach((name, index) => {
+                const nameValue = typeof name === 'object' ? name.name : name;
+                const confidence = typeof name === 'object' ? name.confidence : 0.5;
+                const nameType = typeof name === 'object' ? name.type : 'unknown';
+                const confidenceText = confidence >= 0.8 ? 'High' : confidence >= 0.5 ? 'Medium' : 'Low';
+                const confidenceClass = confidence >= 0.8 ? 'high' : confidence >= 0.5 ? 'medium' : 'low';
+                html += `
+                    <div class="bg-slate border border-translucent-blue rounded-lg p-4 hover:border-electric-blue transition-colors">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="font-mono text-ice-white">${nameValue}</span>
+                                <div class="text-xs text-cool-gray mt-1">Type: ${nameType.replace('_', ' ')} | Confidence: ${(confidence * 100).toFixed(0)}%</div>
+                            </div>
+                            <span class="text-xs px-2 py-1 rounded-full ${getConfidenceBadgeClass(confidenceClass)}">${confidenceText}</span>
+                        </div>
+                    </div>
+                `;
             });
             
-            card.style.animationDelay = `${index * 0.1}s`;
-            this.elements.nameGrid.appendChild(card);
-        });
-    }
-    
-    createResultCard({ value, meta, status, confidence, type }) {
-        const card = document.createElement('div');
-        card.className = 'result-card hover-glow';
-        card.dataset.type = type;
-        
-        let statusBadge = '';
-        let confidenceBar = '';
-        
-        if (status) {
-            const statusClass = status === 'valid' ? 'status-valid' : 'status-invalid';
-            const statusText = status === 'valid' ? '✓ Valid' : '✗ Invalid';
-            statusBadge = `<span class="result-status ${statusClass}">${statusText}</span>`;
+            html += `</div></div>`;
         }
         
-        if (confidence !== undefined) {
-            const confidencePercent = Math.round(confidence * 100);
-            confidenceBar = `
-                <div class="confidence-bar">
-                    <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
+        if (html === '') {
+            html = `
+                <div class="text-center py-20">
+                    <div class="text-6xl mb-4">🔍</div>
+                    <h3 class="text-2xl font-orbitron mb-2">No Data Extracted</h3>
+                    <p class="text-cool-gray">No emails, phone numbers, or names were found in the processed content.</p>
                 </div>
-                <span class="result-status">${confidencePercent}% confidence</span>
             `;
         }
         
-        card.innerHTML = `
-            <div class="result-value">${this.escapeHtml(value)}</div>
-            <div class="result-meta">
-                <span>${this.escapeHtml(meta)}</span>
-                ${statusBadge}
+        resultsContainerEl.innerHTML = html;
+    }
+
+    function getConfidenceBadgeClass(confidence) {
+        const confLower = typeof confidence === 'string' ? confidence.toLowerCase() : confidence;
+        switch (confLower) {
+            case 'high':
+                return 'bg-neon-green text-charcoal';
+            case 'medium':
+                return 'bg-amber-glow text-charcoal';
+            case 'low':
+            case 'estimated':
+                return 'bg-cool-gray text-charcoal';
+            default:
+                return 'bg-translucent-blue text-ice-white';
+        }
+    }
+
+    function setupFilters() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const resultsSections = document.querySelectorAll('.results-section');
+        
+        filterButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // Update active button
+                filterButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const filter = btn.dataset.filter;
+                
+                // Show/hide sections based on filter
+                resultsSections.forEach(section => {
+                    if (filter === 'all' || section.dataset.type === filter) {
+                        section.style.display = 'block';
+                    } else {
+                        section.style.display = 'none';
+                    }
+                });
+            });
+        });
+    }
+
+    function setupExportButtons(sessionId) {
+        // Add export buttons after filter controls
+        const filterSection = filterControlsEl.parentElement;
+        const exportSection = document.createElement('section');
+        exportSection.className = 'text-center mb-8';
+        exportSection.innerHTML = `
+            <h3 class="text-xl font-orbitron mb-4">Export Results</h3>
+            <div class="flex flex-wrap justify-center gap-4 mb-6">
+                <button id="export-csv" class="export-btn floating-export-csv">📄 Download CSV</button>
+                <button id="export-json" class="export-btn floating-export-json">📋 Download JSON</button>
             </div>
-            ${confidenceBar}
+            <div class="text-center">
+                <a href="/" class="text-electric-blue hover:underline text-sm">&larr; Back to Home</a>
+            </div>
         `;
         
-        return card;
-    }
-    
-    handleFilter(filterType) {
-        this.currentFilter = filterType;
+        filterSection.parentNode.insertBefore(exportSection, filterSection.nextSibling);
         
-        // Update active filter button
-        this.elements.filterButtons.forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filter === filterType);
+        // Add export functionality
+        document.getElementById('export-csv').addEventListener('click', () => {
+            window.location.href = `/api/export/csv/${sessionId}`;
         });
         
-        // Filter results
-        if (filterType === 'all') {
-            this.elements.emailResults.style.display = 'block';
-            this.elements.phoneResults.style.display = 'block';
-            this.elements.nameResults.style.display = 'block';
-        } else {
-            this.elements.emailResults.style.display = filterType === 'emails' ? 'block' : 'none';
-            this.elements.phoneResults.style.display = filterType === 'phones' ? 'block' : 'none';
-            this.elements.nameResults.style.display = filterType === 'names' ? 'block' : 'none';
-        }
-        
-        // Animate filtered results
-        this.animateFilteredResults();
-        
-        // Show notification
-        const filterNames = { 
-            all: 'All Results', 
-            emails: 'Email Addresses', 
-            phones: 'Phone Numbers', 
-            names: 'Names' 
-        };
-        this.showNotification(`Showing: ${filterNames[filterType]}`, 'success');
-    }
-    
-    async exportData(format) {
-        if (!this.sessionId) {
-            this.showNotification('No data to export', 'warning');
-            return;
-        }
-        
-        try {
-            const url = `/api/export/${format}/${this.sessionId}`;
-            
-            if (format === 'json') {
-                // For JSON, create and download from cached data
-                const jsonString = JSON.stringify(this.currentResults, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                this.downloadBlob(blob, `extracted_data_${this.sessionId}.json`);
-            } else {
-                // For CSV and report, try the API endpoint
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `extracted_data_${this.sessionId}.${format === 'report' ? 'txt' : format}`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
-            
-            this.showNotification(`Results exported as ${format.toUpperCase()}`, 'success');
-            
-        } catch (error) {
-            console.error('Export error:', error);
-            this.showNotification('Error exporting data', 'error');
-        }
-    }
-    
-    printResults() {
-        window.print();
-    }
-    
-    setupResultAnimations() {
-        // Animate result cards entrance
-        const cards = document.querySelectorAll('.result-card');
-        cards.forEach((card, index) => {
-            card.style.opacity = '0';
-            card.style.transform = 'translateY(20px)';
-            
-            setTimeout(() => {
-                card.style.transition = 'all 0.5s ease-out';
-                card.style.opacity = '1';
-                card.style.transform = 'translateY(0)';
-            }, index * 50);
+        document.getElementById('export-json').addEventListener('click', () => {
+            window.location.href = `/api/export/json/${sessionId}`;
         });
     }
-    
-    animateFilteredResults() {
-        const visibleCards = document.querySelectorAll('.result-card');
-        visibleCards.forEach((card, index) => {
-            card.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                card.style.transition = 'transform 0.3s ease-out';
-                card.style.transform = 'scale(1)';
-            }, index * 25);
-        });
-    }
-    
-    showLoading() {
-        this.elements.loadingOverlay.classList.remove('hidden');
-    }
-    
-    hideLoading() {
-        this.elements.loadingOverlay.classList.add('hidden');
-    }
-    
-    showEmptyState() {
-        this.elements.emptyState.style.display = 'block';
-        this.elements.resultsSection.style.display = 'none';
-        this.elements.exportSection.style.display = 'none';
-        this.hideLoading();
-    }
-    
-    animateCounter(element, targetValue) {
-        const startValue = parseInt(element.textContent) || 0;
-        const duration = 1000;
-        const startTime = performance.now();
-        
-        const animate = (currentTime) => {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            
-            const easeOut = 1 - Math.pow(1 - progress, 3);
-            const currentValue = Math.round(startValue + (targetValue - startValue) * easeOut);
-            
-            element.textContent = currentValue;
-            
-            if (progress < 1) {
-                requestAnimationFrame(animate);
-            }
-        };
-        
-        requestAnimationFrame(animate);
-    }
-    
-    downloadBlob(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    }
-    
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-        
-        this.elements.notificationContainer.appendChild(notification);
-        
-        setTimeout(() => notification.classList.add('show'), 10);
-        
-        setTimeout(() => {
-            notification.classList.add('removing');
-            setTimeout(() => {
-                if (notification.parentNode) {
-                    notification.parentNode.removeChild(notification);
-                }
-            }, 300);
-        }, 3000);
-    }
-    
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-}
 
-// Initialize results page when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.resultsPage = new ResultsPage();
+    function showEmptyState() {
+        statsGridEl.style.display = 'none';
+        filterControlsEl.parentElement.style.display = 'none';
+        resultsContainerEl.style.display = 'none';
+        emptyStateEl.classList.remove('hidden');
+    }
+
+    // Add export button styles
+    const style = document.createElement('style');
+    style.textContent = `
+        .export-btn {
+            font-family: 'Orbitron', sans-serif;
+            padding: 0.8rem 1.8rem;
+            background: transparent;
+            color: #4AE3EC;
+            border: 1px solid #4AE3EC;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .export-btn:hover {
+            background: #4AE3EC10;
+            box-shadow: 0 0 15px #4AE3EC20;
+        }
+
+        /* Individual floating animations for export buttons */
+        .floating-export-csv {
+            animation: float 10s ease-in-out infinite;
+            animation-delay: 0s;
+        }
+
+        .floating-export-json {
+            animation: float 12s ease-in-out infinite;
+            animation-delay: 1.5s;
+        }
+        
+        .results-section {
+            margin-bottom: 3rem;
+        }
+    `;
+    document.head.appendChild(style);
 });

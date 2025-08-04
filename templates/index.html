@@ -39,7 +39,7 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #0c0c1d 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+            background: linear-gradient(135deg, #060609 0%, #0d0d17 25%, #0b101f 50%, #071a30 75%, #291a41 100%);
             background-attachment: fixed;
             color: #F6F8FA;
             font-family: 'Inter', sans-serif;
@@ -704,7 +704,7 @@
     </div>
 
     <!-- === FOOTER === -->
-    <footer class="text-center py-8 border-t border-translucent-blue mt-12">
+    <footer class="text-center py-8 mt-12">
         <p class="text-cool-gray text-sm">
             PatternHive: revolutionizing data pattern extraction | <em>powered by <a href="#" class="text-electric-blue hover:underline" onclick="showNotification('Niostudio link not yet configured', 'warning'); return false;">Niostudio</a></em>
         </p>
@@ -765,7 +765,7 @@
             if (currentTab === 'text') {
                 const text = input.value.trim();
                 if (!text) {
-                    showNotification('Please enter some text to extract', 'warning');
+                    showNotification('Please enter some text', 'warning');
                     return;
                 }
                 
@@ -774,7 +774,7 @@
             } else {
                 // Check if file is selected
                 if (!fileInput.files.length) {
-                    showNotification('Please select a file to extract', 'warning');
+                    showNotification('Please select a file', 'warning');
                     return;
                 }
                 
@@ -804,10 +804,8 @@
                     localStorage.setItem('patternhive_session', result.session_id);
                     localStorage.setItem('patternhive_text_input', text);
                     
-                    showNotification('Text processed successfully! Redirecting...', 'success');
-                    setTimeout(() => {
-                        window.location.href = '/results';
-                    }, 1500);
+                    // Redirect immediately to results page
+                    window.location.href = '/results';
                 } else {
                     showNotification(result.error || 'Error processing text', 'error');
                 }
@@ -904,7 +902,6 @@
             extractBtn.textContent = 'Processing...';
             extractBtn.disabled = true;
             processingSection.style.display = 'block';
-            showNotification(`Processing "${file.name}"...`, 'info');
             
             try {
                 // Create FormData for file upload
@@ -920,15 +917,12 @@
                 const result = await response.json();
                 
                 if (response.ok) {
-                    // Success - store session ID and redirect to results
+                    // Success - store session ID and redirect to results immediately
                     localStorage.setItem('patternhive_session', result.session_id);
                     localStorage.setItem('patternhive_filename', result.filename);
                     
-                    showNotification(`Successfully processed "${file.name}"! Redirecting to results...`, 'success');
-                    
-                    setTimeout(() => {
-                        window.location.href = '/results';
-                    }, 1500);
+                    // Redirect immediately to results page
+                    window.location.href = '/results';
                     
                 } else {
                     // Error from server

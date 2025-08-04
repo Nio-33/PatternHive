@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="PatternHive - Extraction Results">
-    <title>PatternHive - Results</title>
+    <title>PatternHive | Extraction Results</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -36,17 +36,100 @@
         }
     </script>
 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body {
-            background-color: #0D0D0D;
+            background: linear-gradient(135deg, #060609 0%, #0d0d17 25%, #0b101f 50%, #071a30 75%, #291a41 100%);
+            background-attachment: fixed;
             color: #F6F8FA;
             font-family: 'Inter', sans-serif;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated starfield background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(2px 2px at 20px 30px, #eee, transparent),
+                radial-gradient(2px 2px at 40px 70px, rgba(255,255,255,0.8), transparent),
+                radial-gradient(1px 1px at 90px 40px, #fff, transparent),
+                radial-gradient(1px 1px at 130px 80px, rgba(255,255,255,0.6), transparent),
+                radial-gradient(2px 2px at 160px 30px, #ddd, transparent);
+            background-repeat: repeat;
+            background-size: 200px 100px;
+            animation: sparkle 20s linear infinite;
+            z-index: -2;
+            opacity: 0.8;
+        }
+
+        /* Moving stars animation */
+        @keyframes sparkle {
+            from { transform: translateX(0); }
+            to { transform: translateX(-200px); }
+        }
+
+        /* Nebula effect overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(ellipse at 20% 50%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(255, 119, 198, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(120, 219, 255, 0.06) 0%, transparent 50%);
+            z-index: -1;
+            pointer-events: none;
         }
 
         h1, h2, h3, .glitch-text {
             font-family: 'Orbitron', sans-serif;
             letter-spacing: 1px;
+        }
+
+        /* Content positioning to show above background */
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* === HERO CONTENT === */
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-content h1,
+        .hero-content p {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* Force vertical stacking of hero elements */
+        .hero-content .glitch-text {
+            display: block !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1.5rem;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        .filter-btn.active {
+            background-color: #4AE3EC;
+            color: #0D0D0D;
+            box-shadow: 0 0 15px #4AE3EC50;
         }
 
         /* === GLITCH TEXT EFFECT === */
@@ -64,7 +147,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-            clip: rect(0, 0, 0, 0);
         }
 
         .glitch-text::before {
@@ -80,810 +162,194 @@
         }
 
         @keyframes glitch-1 {
-            0%, 90% { clip: rect(38px, 999px, 12px, 0); }
-            10% { clip: rect(4px, 999px, 88px, 0); }
+            0%, 90% { clip: rect(0px, 999px, 80px, 0); }
+            10% { clip: rect(20px, 999px, 60px, 0); }
         }
 
         @keyframes glitch-2 {
-            0%, 80% { clip: rect(15px, 999px, 33px, 0); }
-            90% { clip: rect(66px, 999px, 77px, 0); }
+            0%, 80% { clip: rect(10px, 999px, 70px, 0); }
+            90% { clip: rect(30px, 999px, 50px, 0); }
+        }
+
+        /* Enhanced filter buttons */
+        .filter-btn {
+            background-color: rgba(26, 27, 35, 0.8) !important;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(74, 227, 236, 0.1);
+            border: 1px solid rgba(74, 227, 236, 0.08);
+            transition: all 0.4s ease;
+        }
+
+        .filter-btn:hover {
+            background-color: rgba(26, 27, 35, 0.9) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 8px 25px rgba(74, 227, 236, 0.2);
+            border: 1px solid rgba(74, 227, 236, 0.12);
+            transform: translateY(-2px) scale(1.05);
+        }
+
+        .filter-btn.active {
+            background-color: #4AE3EC !important;
+            color: #0D0D0D !important;
+            box-shadow: 0 8px 30px rgba(74, 227, 236, 0.3) !important;
+            border: 1px solid rgba(74, 227, 236, 0.2) !important;
         }
 
         /* === DATA CARD === */
         .data-card {
-            background-color: #1A1B23;
-            border: 1px solid #334155;
+            background: linear-gradient(135deg, rgba(20, 24, 30, 0.6), rgba(15, 20, 25, 0.7)) !important;
+            backdrop-filter: blur(18px) saturate(220%);
+            -webkit-backdrop-filter: blur(18px) saturate(220%);
+            border: 1px solid rgba(74, 227, 236, 0.12);
             border-radius: 12px;
             padding: 1.5rem;
             color: #F6F8FA;
-            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            transition: transform 0.4s ease, box-shadow 0.4s ease, background 0.4s ease;
             position: relative;
             overflow: hidden;
+            box-shadow: 
+                0 10px 35px rgba(74, 227, 236, 0.12),
+                0 4px 15px rgba(0, 0, 0, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.25);
         }
 
         .data-card:hover {
+            background: linear-gradient(135deg, rgba(20, 24, 30, 0.75), rgba(15, 20, 25, 0.8)) !important;
+            backdrop-filter: blur(22px) saturate(250%);
+            -webkit-backdrop-filter: blur(22px) saturate(250%);
             transform: translateY(-6px) rotateX(5deg);
-            box-shadow: 0 0 20px #4AE3EC30, 0 0 30px #4C6FFF20;
+            box-shadow: 
+                0 15px 45px rgba(74, 227, 236, 0.18),
+                0 8px 25px rgba(76, 111, 255, 0.12),
+                0 6px 20px rgba(0, 0, 0, 0.3),
+                inset 0 2px 0 rgba(255, 255, 255, 0.2),
+                inset 0 -2px 0 rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(74, 227, 236, 0.18);
         }
 
         .data-card::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234AE3EC' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='5' cy='5' r='1'/%3E%3C/g%3E%3C/svg%3E");
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234AE3EC' fill-opacity='0.02' fill-rule='evenodd'%3E%3Ccircle cx='5' cy='5' r='1'/%3E%3C/g%3E%3C/svg%3E");
             pointer-events: none;
         }
 
-        .count-badge {
-            font-family: 'Orbitron', sans-serif;
-            padding: 0.4rem 0.8rem;
-            background: #4AE3EC10;
-            border: 1px solid #4AE3EC;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* === RESULT CARD === */
-        .result-card {
-            background-color: #1A1B23;
-            border: 1px solid #334155;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .result-card:hover {
-            border-color: #4AE3EC;
-            transform: translateX(5px);
-        }
-
-        .result-card::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: #4AE3EC;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .result-card:hover::before {
-            opacity: 1;
-        }
-
-        .result-value {
-            font-family: 'Orbitron', sans-serif;
-            font-size: 1.1rem;
-            color: #F6F8FA;
-            margin-bottom: 0.5rem;
-        }
-
-        .result-meta {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.9rem;
-            color: #9CA3AF;
-        }
-
-        .result-status {
-            padding: 0.2rem 0.5rem;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .status-valid {
-            background: #10B98120;
-            color: #10B981;
-            border: 1px solid #10B981;
-        }
-
-        .status-invalid {
-            background: #EF444420;
-            color: #EF4444;
-            border: 1px solid #EF4444;
-        }
-
-        .confidence-bar {
-            height: 4px;
-            background: #334155;
-            border-radius: 2px;
-            overflow: hidden;
-            margin: 0.5rem 0;
-        }
-
-        .confidence-fill {
-            height: 100%;
-            background: #4AE3EC;
-            border-radius: 2px;
-            transition: width 0.8s ease;
-        }
-
-        /* === EXPORT BUTTON === */
-        .export-btn {
-            font-family: 'Orbitron', sans-serif;
-            padding: 0.8rem 1.8rem;
-            background: transparent;
-            color: #4AE3EC;
-            border: 1px solid #4AE3EC;
-            border-radius: 50px;
-            cursor: pointer;
-            position: relative;
-            overflow: hidden;
+        /* Enhanced results cards */
+        .results-section > div > div {
+            background: linear-gradient(135deg, rgba(26, 27, 35, 0.8), rgba(20, 24, 30, 0.9)) !important;
+            backdrop-filter: blur(15px) saturate(180%);
+            -webkit-backdrop-filter: blur(15px) saturate(180%);
+            box-shadow: 
+                0 8px 32px rgba(74, 227, 236, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(74, 227, 236, 0.08) !important;
             transition: all 0.4s ease;
         }
 
-        .export-btn:hover {
-            background: #4AE3EC10;
-            box-shadow: 0 0 15px #4AE3EC20;
+        .results-section > div > div:hover {
+            background: linear-gradient(135deg, rgba(26, 27, 35, 0.9), rgba(20, 24, 30, 0.95)) !important;
+            backdrop-filter: blur(20px) saturate(200%);
+            -webkit-backdrop-filter: blur(20px) saturate(200%);
+            box-shadow: 
+                0 12px 40px rgba(74, 227, 236, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15),
+                inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(74, 227, 236, 0.15) !important;
+            transform: translateY(-3px);
         }
 
-        .export-btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, #4AE3EC30, transparent);
-            transition: left 0.6s ease;
+        /* Floating animations */
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
         }
 
-        .export-btn:hover::before {
-            left: 100%;
+        .floating {
+            animation: float 8s ease-in-out infinite;
         }
 
-        /* === FILTER BUTTONS === */
-        .filter-btn {
-            padding: 0.5rem 1rem;
-            background: transparent;
-            color: #9CA3AF;
-            border: 1px solid #334155;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
+        /* Stats cards floating animations with staggered delays */
+        #stats-grid .data-card:nth-child(1) {
+            animation: float 8s ease-in-out infinite;
+            animation-delay: 0s;
         }
 
-        .filter-btn:hover, .filter-btn.active {
-            color: #4AE3EC;
-            border-color: #4AE3EC;
-            background: #4AE3EC10;
+        #stats-grid .data-card:nth-child(2) {
+            animation: float 8s ease-in-out infinite;
+            animation-delay: 1s;
         }
 
-        /* === STATS GRID === */
-        .stat-item {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.95rem;
-            color: #DCE3E8;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid #334155;
+        #stats-grid .data-card:nth-child(3) {
+            animation: float 8s ease-in-out infinite;
+            animation-delay: 2s;
         }
 
-        .stat-item:last-child {
-            border-bottom: none;
+        /* Source info without floating */
+        .floating-source {
+            animation: none;
         }
 
-        /* === ANIMATED COUNTER === */
-        .counter {
-            display: inline-block;
-            font-family: 'Orbitron', sans-serif;
+        /* Filter controls without floating */
+        #filter-controls {
+            animation: none;
         }
 
-        /* === FROST OVERLAY === */
-        .frost-overlay {
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background: 
-                radial-gradient(circle at 10% 20%, rgba(74, 227, 236, 0.05) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(76, 111, 255, 0.04) 0%, transparent 50%);
-            z-index: 0;
-        }
-
-        .content {
-            position: relative;
-            z-index: 10;
-        }
-
-        /* === LOADING / ICE ANIMATION === */
-        .ice-loader {
-            width: 40px;
-            height: 40px;
-            border: 2px solid #334155;
-            border-radius: 50%;
-            position: relative;
-            margin: 1rem auto;
-        }
-
-        .ice-loader::after {
-            content: '';
-            position: absolute;
-            width: 20px;
-            height: 20px;
-            background: #4AE3EC;
-            border-radius: 50%;
-            top: 9px;
-            left: 9px;
-            animation: pulse 1.5s ease-in-out infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(0.8); opacity: 0.6; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        /* === NOTIFICATION STYLES === */
-        .notification {
-            background: #1A1B23;
-            border: 1px solid #4AE3EC;
-            border-radius: 8px;
-            padding: 1rem;
-            margin-bottom: 0.5rem;
-            color: #F6F8FA;
-            opacity: 0;
-            transform: translateX(100%);
-            transition: all 0.3s ease;
-        }
-
-        .notification.show {
-            opacity: 1;
-            transform: translateX(0);
-        }
-
-        .notification.notification-success {
-            border-color: #10B981;
-        }
-
-        .notification.notification-error {
-            border-color: #EF4444;
-        }
-
-        .notification.notification-warning {
-            border-color: #F59E0B;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .grid-cols-3 { grid-template-columns: 1fr; }
-            .glitch-text { font-size: 1.8rem; }
-        }
+        /* Export section without block styling */
     </style>
 </head>
-<body class="charcoal text-ice-white min-h-screen">
-
-    <!-- Frost Depth Overlay -->
-    <div class="frost-overlay"></div>
+<body class="text-ice-white min-h-screen">
 
     <div class="content px-6 py-12 max-w-6xl mx-auto">
 
-        <!-- === HEADER === -->
-        <header class="flex justify-between items-center mb-12">
-            <div>
-                <h1 class="glitch-text text-4xl mb-2" data-text="EXTRACTION RESULTS">EXTRACTION RESULTS</h1>
-                <p class="text-cool-gray">Session: <span id="session-id" class="text-electric-blue font-mono">Loading...</span></p>
-                <p class="text-cool-gray">Processed: <span id="processed-time" class="text-ice-white">Loading...</span></p>
-                <div id="filename-item" class="text-cool-gray" style="display: none;">
-                    File: <span id="filename" class="text-ice-white">N/A</span>
-                </div>
-            </div>
-            <div>
-                <a href="/" class="export-btn">🏠 Back to Home</a>
+        <header class="text-center mb-12">
+            <div class="hero-content">
+                <h1 class="glitch-text text-5xl mb-2 block w-full font-orbitron" data-text="PATTERNHIVE">PATTERNHIVE</h1>
+                <p class="glitch-text text-xl opacity-90 mb-6 block w-full font-orbitron" data-text="Parse • Extract • Analyze">Parse • Extract • Analyze</p>
             </div>
         </header>
 
-        <!-- === STATISTICS CARDS === -->
-        <section class="grid md:grid-cols-3 gap-6 mb-12">
-            <!-- Emails Card -->
-            <div class="data-card cursor-pointer" data-type="emails">
-                <h3 class="text-lg mb-2">📧 Email Addresses</h3>
-                <div class="count-badge mb-3">
-                    <span id="email-count" class="counter">0</span> Found
-                </div>
-                <div class="text-cool-gray text-xs">Click to view details</div>
-            </div>
+        <!-- Stats Grid -->
+        <section id="stats-grid" class="grid md:grid-cols-3 gap-6 mb-12">
+            <!-- Stat cards will be dynamically injected here -->
+        </section>
 
-            <!-- Phones Card -->
-            <div class="data-card cursor-pointer" data-type="phones">
-                <h3 class="text-lg mb-2">📞 Phone Numbers</h3>
-                <div class="count-badge mb-3">
-                    <span id="phone-count" class="counter">0</span> Found
-                </div>
-                <div class="text-cool-gray text-xs">Click to view details</div>
-            </div>
-
-            <!-- Names Card -->
-            <div class="data-card cursor-pointer" data-type="names">
-                <h3 class="text-lg mb-2">👤 Names</h3>
-                <div class="count-badge mb-3">
-                    <span id="name-count" class="counter">0</span> Found
-                </div>
-                <div class="text-cool-gray text-xs">Click to view details</div>
+        <!-- Filter Controls -->
+        <section class="text-center mb-8">
+            <div id="filter-controls" class="inline-flex bg-slate p-2 rounded-lg border border-translucent-blue gap-2">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="emails">Emails</button>
+                <button class="filter-btn" data-filter="phones">Phones</button>
+                <button class="filter-btn" data-filter="names">Names</button>
             </div>
         </section>
 
-        <!-- === FILTER CONTROLS === -->
-        <section class="mb-8">
-            <div class="flex flex-wrap gap-3 justify-center">
-                <button class="filter-btn active" data-filter="all">🔍 Show All</button>
-                <button class="filter-btn" data-filter="emails">📧 Emails Only</button>
-                <button class="filter-btn" data-filter="phones">📞 Phones Only</button>
-                <button class="filter-btn" data-filter="names">👤 Names Only</button>
-            </div>
+        <!-- Results Container -->
+        <section id="results-container">
+            <!-- Results will be dynamically injected here -->
         </section>
 
-        <!-- === RESULTS DISPLAY === -->
-        <section id="results-section">
-            <!-- Email Results -->
-            <div class="result-category mb-8" id="email-results">
-                <h3 class="text-2xl mb-4 flex items-center gap-2">
-                    📧 Email Addresses
-                    <span class="count-badge" id="email-badge">0</span>
-                </h3>
-                <div id="email-grid" class="space-y-2"></div>
-            </div>
-            
-            <!-- Phone Results -->
-            <div class="result-category mb-8" id="phone-results">
-                <h3 class="text-2xl mb-4 flex items-center gap-2">
-                    📞 Phone Numbers
-                    <span class="count-badge" id="phone-badge">0</span>
-                </h3>
-                <div id="phone-grid" class="space-y-2"></div>
-            </div>
-            
-            <!-- Name Results -->
-            <div class="result-category mb-8" id="name-results">
-                <h3 class="text-2xl mb-4 flex items-center gap-2">
-                    👤 Names
-                    <span class="count-badge" id="name-badge">0</span>
-                </h3>
-                <div id="name-grid" class="space-y-2"></div>
-            </div>
+        <!-- Empty State -->
+        <section id="empty-state" class="text-center py-20 hidden">
+            <div class="text-6xl mb-4">🤷</div>
+            <h2 class="text-3xl font-orbitron">No Data Found</h2>
+            <p class="text-cool-gray mt-2">The session may have expired or no data was processed.</p>
         </section>
-
-        <!-- === EXPORT SECTION === -->
-        <section class="bg-slate p-6 rounded-xl border border-translucent-blue mb-12" id="export-section">
-            <h2 class="text-2xl mb-4">📤 Export Results</h2>
-            <p class="text-cool-gray mb-6">
-                Download your extracted data in various formats for further analysis or integration.
-            </p>
-            <div class="flex flex-wrap justify-center gap-4">
-                <button id="export-json-btn" class="export-btn" data-format="json">
-                    📋 JSON Format
-                </button>
-                <button id="export-csv-btn" class="export-btn" data-format="csv">
-                    📊 CSV Spreadsheet
-                </button>
-                <button id="export-report-btn" class="export-btn" data-format="report">
-                    📄 Text Report
-                </button>
-                <button id="print-results-btn" class="export-btn">
-                    🖨️ Print Results
-                </button>
-            </div>
-        </section>
-
-        <!-- === NO RESULTS STATE === -->
-        <div class="text-center py-12" id="empty-state">
-            <div class="text-6xl mb-4">🔍</div>
-            <h3 class="text-2xl mb-4">No Results Found</h3>
-            <p class="text-cool-gray mb-6">
-                No session data was found. This might be because the session has expired or the link is invalid.
-            </p>
-            <a href="/" class="export-btn">🏠 Go Back Home</a>
-        </div>
 
     </div>
 
-    <!-- === LOADING OVERLAY === -->
-    <div id="loading-overlay" class="fixed inset-0 bg-charcoal bg-opacity-90 flex items-center justify-center z-50">
-        <div class="text-center">
-            <div class="ice-loader"></div>
-            <p class="text-cool-gray mt-4">Loading results...</p>
-        </div>
-    </div>
+    <!-- === FOOTER === -->
+    <footer class="text-center py-8 mt-12">
+        <p class="text-cool-gray text-sm">
+            PatternHive: revolutionizing data pattern extraction | <em>powered by <a href="#" class="text-electric-blue hover:underline">Niostudio</a></em>
+        </p>
+    </footer>
 
-    <!-- === NOTIFICATION SYSTEM === -->
-    <div id="notification-container" class="fixed top-4 right-4 z-50" aria-live="polite"></div>
-
-    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/results.js') }}"></script>
-    <script>
-        // Enhanced Results Page Logic with igloo styling
-        class IglooResultsPage {
-            constructor() {
-                this.sessionId = null;
-                this.currentResults = null;
-                this.currentFilter = 'all';
-                
-                this.elements = {
-                    sessionId: document.getElementById('session-id'),
-                    processedTime: document.getElementById('processed-time'),
-                    filename: document.getElementById('filename'),
-                    filenameItem: document.getElementById('filename-item'),
-                    
-                    emailCount: document.getElementById('email-count'),
-                    phoneCount: document.getElementById('phone-count'),
-                    nameCount: document.getElementById('name-count'),
-                    
-                    emailBadge: document.getElementById('email-badge'),
-                    phoneBadge: document.getElementById('phone-badge'),
-                    nameBadge: document.getElementById('name-badge'),
-                    
-                    emailGrid: document.getElementById('email-grid'),
-                    phoneGrid: document.getElementById('phone-grid'),
-                    nameGrid: document.getElementById('name-grid'),
-                    
-                    emailResults: document.getElementById('email-results'),
-                    phoneResults: document.getElementById('phone-results'),
-                    nameResults: document.getElementById('name-results'),
-                    
-                    filterButtons: document.querySelectorAll('.filter-btn'),
-                    exportJsonBtn: document.getElementById('export-json-btn'),
-                    exportCsvBtn: document.getElementById('export-csv-btn'),
-                    exportReportBtn: document.getElementById('export-report-btn'),
-                    printResultsBtn: document.getElementById('print-results-btn'),
-                    
-                    loadingOverlay: document.getElementById('loading-overlay'),
-                    emptyState: document.getElementById('empty-state'),
-                    resultsSection: document.getElementById('results-section'),
-                    exportSection: document.getElementById('export-section'),
-                    notificationContainer: document.getElementById('notification-container')
-                };
-                
-                this.init();
-            }
-            
-            init() {
-                this.getSessionIdFromUrl();
-                this.setupEventListeners();
-                this.loadResults();
-            }
-            
-            getSessionIdFromUrl() {
-                const urlParams = new URLSearchParams(window.location.search);
-                this.sessionId = urlParams.get('session');
-                
-                if (!this.sessionId) {
-                    this.showEmptyState();
-                    return;
-                }
-                
-                this.elements.sessionId.textContent = this.sessionId;
-            }
-            
-            setupEventListeners() {
-                // Filter buttons
-                this.elements.filterButtons.forEach(btn => {
-                    btn.addEventListener('click', () => this.handleFilter(btn.dataset.filter));
-                });
-                
-                // Export buttons
-                this.elements.exportJsonBtn.addEventListener('click', () => this.exportData('json'));
-                this.elements.exportCsvBtn.addEventListener('click', () => this.exportData('csv'));
-                this.elements.exportReportBtn.addEventListener('click', () => this.exportData('report'));
-                this.elements.printResultsBtn.addEventListener('click', () => this.printResults());
-                
-                // Stat card clicks
-                document.querySelectorAll('[data-type]').forEach(card => {
-                    card.addEventListener('click', () => {
-                        const type = card.dataset.type;
-                        this.handleFilter(type);
-                    });
-                });
-            }
-            
-            async loadResults() {
-                if (!this.sessionId) return;
-                
-                this.showLoading();
-                
-                try {
-                    const cachedResults = localStorage.getItem(`patternhive_session_${this.sessionId}`);
-                    
-                    if (cachedResults) {
-                        const data = JSON.parse(cachedResults);
-                        this.displayResults(data.results, data.stats, data.filename);
-                        this.elements.processedTime.textContent = new Date(data.timestamp).toLocaleString();
-                        if (data.filename) {
-                            this.elements.filename.textContent = data.filename;
-                            this.elements.filenameItem.style.display = 'block';
-                        }
-                    } else {
-                        this.showEmptyState();
-                        this.showNotification('Session data not found. Results are only available during the current browser session.', 'warning');
-                        return;
-                    }
-                    
-                } catch (error) {
-                    console.error('Error loading results:', error);
-                    this.showNotification('Error loading results: ' + error.message, 'error');
-                    this.showEmptyState();
-                } finally {
-                    this.hideLoading();
-                }
-            }
-            
-            displayResults(results, stats, filename = null) {
-                this.currentResults = results;
-                
-                // Update statistics with animation
-                this.animateCounter(this.elements.emailCount, stats.emails_found);
-                this.animateCounter(this.elements.phoneCount, stats.phones_found);
-                this.animateCounter(this.elements.nameCount, stats.names_found);
-                
-                // Update badges
-                this.elements.emailBadge.textContent = stats.emails_found;
-                this.elements.phoneBadge.textContent = stats.phones_found;
-                this.elements.nameBadge.textContent = stats.names_found;
-                
-                // Display results
-                this.displayEmailResults(results.emails);
-                this.displayPhoneResults(results.phones);
-                this.displayNameResults(results.names);
-                
-                // Show results section
-                this.elements.emptyState.style.display = 'none';
-                this.elements.resultsSection.style.display = 'block';
-                this.elements.exportSection.style.display = 'block';
-            }
-            
-            displayEmailResults(emails) {
-                this.elements.emailGrid.innerHTML = '';
-                
-                if (emails.length === 0) {
-                    this.elements.emailResults.style.display = 'none';
-                    return;
-                }
-                
-                this.elements.emailResults.style.display = 'block';
-                
-                emails.forEach((email, index) => {
-                    const card = this.createResultCard({
-                        value: email.email,
-                        meta: email.domain,
-                        status: email.valid ? 'valid' : 'invalid',
-                        type: 'email'
-                    });
-                    
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    this.elements.emailGrid.appendChild(card);
-                });
-            }
-            
-            displayPhoneResults(phones) {
-                this.elements.phoneGrid.innerHTML = '';
-                
-                if (phones.length === 0) {
-                    this.elements.phoneResults.style.display = 'none';
-                    return;
-                }
-                
-                this.elements.phoneResults.style.display = 'block';
-                
-                phones.forEach((phone, index) => {
-                    const card = this.createResultCard({
-                        value: phone.formatted,
-                        meta: phone.country || 'Unknown',
-                        status: phone.valid ? 'valid' : 'invalid',
-                        type: 'phone'
-                    });
-                    
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    this.elements.phoneGrid.appendChild(card);
-                });
-            }
-            
-            displayNameResults(names) {
-                this.elements.nameGrid.innerHTML = '';
-                
-                if (names.length === 0) {
-                    this.elements.nameResults.style.display = 'none';
-                    return;
-                }
-                
-                this.elements.nameResults.style.display = 'block';
-                
-                names.forEach((name, index) => {
-                    const card = this.createResultCard({
-                        value: name.name,
-                        meta: name.type.replace('_', ' '),
-                        confidence: name.confidence,
-                        type: 'name'
-                    });
-                    
-                    card.style.animationDelay = `${index * 0.1}s`;
-                    this.elements.nameGrid.appendChild(card);
-                });
-            }
-            
-            createResultCard({ value, meta, status, confidence, type }) {
-                const card = document.createElement('div');
-                card.className = 'result-card';
-                card.dataset.type = type;
-                
-                let statusBadge = '';
-                let confidenceBar = '';
-                
-                if (status) {
-                    const statusClass = status === 'valid' ? 'status-valid' : 'status-invalid';
-                    const statusText = status === 'valid' ? '✓ Valid' : '✗ Invalid';
-                    statusBadge = `<span class="result-status ${statusClass}">${statusText}</span>`;
-                }
-                
-                if (confidence !== undefined) {
-                    const confidencePercent = Math.round(confidence * 100);
-                    confidenceBar = `
-                        <div class="confidence-bar">
-                            <div class="confidence-fill" style="width: ${confidencePercent}%"></div>
-                        </div>
-                        <span class="result-status">${confidencePercent}% confidence</span>
-                    `;
-                }
-                
-                card.innerHTML = `
-                    <div class="result-value">${this.escapeHtml(value)}</div>
-                    <div class="result-meta">
-                        <span>${this.escapeHtml(meta)}</span>
-                        ${statusBadge}
-                    </div>
-                    ${confidenceBar}
-                `;
-                
-                return card;
-            }
-            
-            handleFilter(filterType) {
-                this.currentFilter = filterType;
-                
-                // Update active filter button
-                this.elements.filterButtons.forEach(btn => {
-                    btn.classList.toggle('active', btn.dataset.filter === filterType);
-                });
-                
-                // Filter results
-                if (filterType === 'all') {
-                    this.elements.emailResults.style.display = 'block';
-                    this.elements.phoneResults.style.display = 'block';
-                    this.elements.nameResults.style.display = 'block';
-                } else {
-                    this.elements.emailResults.style.display = filterType === 'emails' ? 'block' : 'none';
-                    this.elements.phoneResults.style.display = filterType === 'phones' ? 'block' : 'none';
-                    this.elements.nameResults.style.display = filterType === 'names' ? 'block' : 'none';
-                }
-                
-                // Show notification
-                const filterNames = { 
-                    all: 'All Results', 
-                    emails: 'Email Addresses', 
-                    phones: 'Phone Numbers', 
-                    names: 'Names' 
-                };
-                this.showNotification(`Showing: ${filterNames[filterType]}`, 'success');
-            }
-            
-            async exportData(format) {
-                if (!this.sessionId) {
-                    this.showNotification('No data to export', 'warning');
-                    return;
-                }
-                
-                try {
-                    if (format === 'json') {
-                        const jsonString = JSON.stringify(this.currentResults, null, 2);
-                        const blob = new Blob([jsonString], { type: 'application/json' });
-                        this.downloadBlob(blob, `extracted_data_${this.sessionId}.json`);
-                    } else {
-                        const url = `/api/export/${format}/${this.sessionId}`;
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.download = `extracted_data_${this.sessionId}.${format === 'report' ? 'txt' : format}`;
-                        document.body.appendChild(link);
-                        link.click();
-                        document.body.removeChild(link);
-                    }
-                    
-                    this.showNotification(`Results exported as ${format.toUpperCase()}`, 'success');
-                    
-                } catch (error) {
-                    console.error('Export error:', error);
-                    this.showNotification('Error exporting data', 'error');
-                }
-            }
-            
-            printResults() {
-                window.print();
-            }
-            
-            showLoading() {
-                this.elements.loadingOverlay.classList.remove('hidden');
-            }
-            
-            hideLoading() {
-                this.elements.loadingOverlay.classList.add('hidden');
-            }
-            
-            showEmptyState() {
-                this.elements.emptyState.style.display = 'block';
-                this.elements.resultsSection.style.display = 'none';
-                this.elements.exportSection.style.display = 'none';
-                this.hideLoading();
-            }
-            
-            animateCounter(element, targetValue) {
-                const startValue = parseInt(element.textContent) || 0;
-                const duration = 1000;
-                const startTime = performance.now();
-                
-                const animate = (currentTime) => {
-                    const elapsed = currentTime - startTime;
-                    const progress = Math.min(elapsed / duration, 1);
-                    
-                    const easeOut = 1 - Math.pow(1 - progress, 3);
-                    const currentValue = Math.round(startValue + (targetValue - startValue) * easeOut);
-                    
-                    element.textContent = currentValue;
-                    
-                    if (progress < 1) {
-                        requestAnimationFrame(animate);
-                    }
-                };
-                
-                requestAnimationFrame(animate);
-            }
-            
-            downloadBlob(blob, filename) {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = filename;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-            }
-            
-            showNotification(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.className = `notification notification-${type}`;
-                notification.textContent = message;
-                
-                this.elements.notificationContainer.appendChild(notification);
-                
-                setTimeout(() => notification.classList.add('show'), 10);
-                
-                setTimeout(() => {
-                    notification.classList.remove('show');
-                    setTimeout(() => {
-                        if (notification.parentNode) {
-                            notification.parentNode.removeChild(notification);
-                        }
-                    }, 300);
-                }, 3000);
-            }
-            
-            escapeHtml(text) {
-                const div = document.createElement('div');
-                div.textContent = text;
-                return div.innerHTML;
-            }
-        }
-
-        // Initialize results page when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            window.iglooResultsPage = new IglooResultsPage();
-        });
-    </script>
 </body>
 </html>

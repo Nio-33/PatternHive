@@ -29,11 +29,13 @@ class TextExtractor:
         # Name patterns - First Last, Last First, titles, etc.
         self.name_patterns = [
             # Title + First + Last (Dr. John Smith, Ms. Jane Doe)
-            re.compile(r'\b(?:Dr|Mr|Ms|Mrs|Miss|Prof|Professor)\.?\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]*\.?\s+)?[A-Z][a-z]+)\b'),
-            # First + Middle? + Last (John Smith, John A. Smith, John Alan Smith)
-            re.compile(r'\b([A-Z][a-z]{1,15}(?:\s+[A-Z]\.?\s+|\s+[A-Z][a-z]{1,15}\s+)?[A-Z][a-z]{1,15})\b'),
+            re.compile(r'\b(?:Dr|Mr|Ms|Mrs|Miss|Prof|Professor)\.?\s+([A-Z][a-z]+\s+[A-Z][a-z]+)\b'),
+            # First + Last (John Smith, Sarah Johnson)
+            re.compile(r'\b([A-Z][a-z]+\s+[A-Z][a-z]+)\b'),
+            # First + Middle + Last (John A. Smith, Mary Jane Doe)
+            re.compile(r'\b([A-Z][a-z]+\s+[A-Z]\.?\s+[A-Z][a-z]+)\b'),
             # Last, First format (Smith, John)
-            re.compile(r'\b([A-Z][a-z]{1,15},\s+[A-Z][a-z]{1,15}(?:\s+[A-Z]\.?)?)\b')
+            re.compile(r'\b([A-Z][a-z]+,\s+[A-Z][a-z]+)\b')
         ]
         
         # Common words to exclude from name detection
@@ -45,7 +47,10 @@ class TextExtractor:
             'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
             'january', 'february', 'march', 'april', 'may', 'june', 'july', 'august',
             'september', 'october', 'november', 'december', 'dear', 'sincerely',
-            'regards', 'thank', 'thanks', 'best', 'yours', 'email', 'phone', 'address'
+            'regards', 'thank', 'thanks', 'best', 'yours', 'email', 'phone', 'address',
+            'location', 'city', 'state', 'country', 'new york', 'los angeles', 'chicago',
+            'boston', 'austin', 'denver', 'miami', 'atlanta', 'dallas', 'minneapolis',
+            'detroit', 'las vegas', 'salt lake city', 'sacramento', 'york', 'angeles'
         }
     
     def extract_emails(self, text: str) -> List[Dict]:
@@ -135,6 +140,15 @@ class TextExtractor:
             matches = pattern.findall(text)
             for match in matches:
                 name = match.strip()
+                
+                # Clean up line breaks and extra whitespace
+                name = re.sub(r'\s+', ' ', name)
+                name = name.replace('\n', ' ').replace('\r', '')
+                
+                # Skip if contains line breaks or looks like location data
+                if '\n' in match:
+                    continue
+                
                 name_lower = name.lower()
                 
                 # Skip if already found or contains excluded words

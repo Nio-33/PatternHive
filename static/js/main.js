@@ -168,7 +168,7 @@ class PatternHive {
         
         if (!text) {
             if (!silent) {
-                this.showNotification('Please enter some text to process', 'warning');
+                this.showNotification('Please enter some text', 'warning');
             }
             return;
         }
