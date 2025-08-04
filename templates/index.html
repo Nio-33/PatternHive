@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="PatternHive - Intelligent data extraction tool for emails, phones, and names with futuristic UI and real-time processing">
+    <meta name="keywords" content="data extraction, regex, email extraction, phone extraction, name extraction">
+    <title>PatternHive | Igloo-Inspired Extraction Tool</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'charcoal': '#0D0D0D',
+                        'slate': '#1A1B23',
+                        'electric-blue': '#4AE3EC',
+                        'frost-blue': '#4C6FFF',
+                        'neon-green': '#10B981',
+                        'amber-glow': '#F59E0B',
+                        'crimson': '#EF4444',
+                        'ice-white': '#F6F8FA',
+                        'cool-gray': '#9CA3AF',
+                        'translucent-blue': '#334155'
+                    },
+                    fontFamily: {
+                        'orbitron': ['Orbitron', 'sans-serif'],
+                        'inter': ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0D0D0D;
+            color: #F6F8FA;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .glitch-text {
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        /* === HERO CONTENT === */
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .hero-content h1,
+        .hero-content p {
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* === GLITCH TEXT EFFECT === */
+        .glitch-text {
+            position: relative;
+            color: #F6F8FA;
+            text-shadow: 0 0 5px #4AE3EC;
+            display: inline-block;
+        }
+
+        /* Force vertical stacking of hero elements */
+        .hero-content .glitch-text {
+            display: block !important;
+            width: 100% !important;
+            text-align: center !important;
+        }
+
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip: rect(0, 0, 0, 0);
+        }
+
+        .glitch-text::before {
+            left: 2px;
+            text-shadow: 0 0 5px #FF00FF;
+            animation: glitch-1 3s infinite alternate;
+        }
+
+        .glitch-text::after {
+            left: -2px;
+            text-shadow: 0 0 5px #00FFFF;
+            animation: glitch-2 2s infinite alternate;
+        }
+
+        @keyframes glitch-1 {
+            0%, 90% { clip: rect(38px, 999px, 12px, 0); }
+            10% { clip: rect(4px, 999px, 88px, 0); }
+        }
+
+        @keyframes glitch-2 {
+            0%, 80% { clip: rect(15px, 999px, 33px, 0); }
+            90% { clip: rect(66px, 999px, 77px, 0); }
+        }
+
+        /* === INPUT AREA === */
+        .textarea-glow {
+            background-color: #1A1B23;
+            border: 1px solid #334155;
+            color: #F6F8FA;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .textarea-glow:focus {
+            outline: none;
+            border-color: #4AE3EC;
+            box-shadow: 0 0 15px #4AE3EC20;
+        }
+
+        /* === DATA CARD === */
+        .data-card {
+            background-color: #1A1B23;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 1.5rem;
+            color: #F6F8FA;
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-card:hover {
+            transform: translateY(-6px) rotateX(5deg);
+            box-shadow: 0 0 20px #4AE3EC30, 0 0 30px #4C6FFF20;
+        }
+
+        .data-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%234AE3EC' fill-opacity='0.03' fill-rule='evenodd'%3E%3Ccircle cx='5' cy='5' r='1'/%3E%3C/g%3E%3C/svg%3E");
+            pointer-events: none;
+        }
+
+        .count-badge {
+            font-family: 'Orbitron', sans-serif;
+            padding: 0.4rem 0.8rem;
+            background: #4AE3EC10;
+            border: 1px solid #4AE3EC;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* === PROGRESS BAR === */
+        .progress-container {
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #4AE3EC;
+            box-shadow: 0 0 10px #4AE3EC;
+            transition: width 0.8s ease;
+        }
+
+        /* === EXPORT BUTTON === */
+        .export-btn {
+            font-family: 'Orbitron', sans-serif;
+            padding: 0.8rem 1.8rem;
+            background: transparent;
+            color: #4AE3EC;
+            border: 1px solid #4AE3EC;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .export-btn:hover {
+            background: #4AE3EC10;
+            box-shadow: 0 0 15px #4AE3EC20;
+        }
+
+        .export-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, #4AE3EC30, transparent);
+            transition: left 0.6s ease;
+        }
+
+        .export-btn:hover::before {
+            left: 100%;
+        }
+
+        /* === STATS GRID === */
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.95rem;
+            color: #DCE3E8;
+        }
+
+        /* === ANIMATED COUNTER === */
+        .counter {
+            display: inline-block;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* === FROST OVERLAY (Simulated Depth) === */
+        .frost-overlay {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(74, 227, 236, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(76, 111, 255, 0.04) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .content {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* === LOADING / ICE ANIMATION === */
+        .ice-loader {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #334155;
+            border-radius: 50%;
+            position: relative;
+            margin: 1rem auto;
+        }
+
+        .ice-loader::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #4AE3EC;
+            border-radius: 50%;
+            top: 9px;
+            left: 9px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(0.8); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid-cols-3 { grid-template-columns: 1fr; }
+            .glitch-text { font-size: 1.8rem; }
+        }
+
+        /* File upload zone */
+        .upload-zone {
+            border: 2px dashed #334155;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover, .upload-zone.dragover {
+            border-color: #4AE3EC;
+            background-color: #4AE3EC10;
+        }
+
+        /* Notification styles */
+        .notification {
+            background: #1A1B23;
+            border: 1px solid #4AE3EC;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            color: #F6F8FA;
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.3s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.notification-success {
+            border-color: #10B981;
+        }
+
+        .notification.notification-error {
+            border-color: #EF4444;
+        }
+
+        .notification.notification-warning {
+            border-color: #F59E0B;
+        }
+    </style>
+</head>
+<body class="charcoal text-ice-white min-h-screen">
+
+    <!-- Frost Depth Overlay -->
+    <div class="frost-overlay"></div>
+
+    <div class="content px-6 py-12 max-w-6xl mx-auto">
+
+        <!-- === HERO SECTION === -->
+        <header class="text-center mb-12">
+            <div class="hero-content">
+                <h1 class="glitch-text text-5xl mb-2 block w-full" data-text="PATTERNHIVE">PATTERNHIVE</h1>
+                <p class="glitch-text text-xl opacity-90 mb-6 block w-full" data-text="Parse • Extract • Analyze">Parse • Extract • Analyze</p>
+            </div>
+            <div class="mt-8 flex justify-center">
+                <div class="w-6 h-10 border-2 border-electric-blue rounded-full flex justify-center">
+                    <div class="w-1 h-3 bg-electric-blue rounded-full mt-2 animate-bounce"></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- === INPUT ZONE === -->
+        <section class="mb-12">
+            <h2 class="text-2xl mb-4">Input Text</h2>
+            <textarea 
+                id="text-input" 
+                class="textarea-glow w-full h-40 resize-none" 
+                placeholder="Paste logs, resumes, scraped content, or any unstructured text here..."></textarea>
+            
+            <div class="flex flex-wrap gap-4 mt-4 text-sm opacity-80">
+                <span>Chars: <span id="charCount" class="counter">0</span></span>
+                <span>Words: <span id="wordCount" class="counter">0</span></span>
+                <span>Lines: <span id="lineCount" class="counter">0</span></span>
+            </div>
+            
+            <!-- File Upload Option -->
+            <div class="mt-6 p-6 upload-zone rounded-xl" id="upload-area">
+                <input type="file" id="file-input" class="hidden" accept=".txt,.pdf,.docx,.doc,.xlsx,.xls,.csv">
+                <div class="text-center cursor-pointer" onclick="document.getElementById('file-input').click()">
+                    <div class="text-4xl mb-2">📁</div>
+                    <p class="text-cool-gray">Drop files here or <span class="text-electric-blue underline">browse</span></p>
+                    <p class="text-sm text-cool-gray mt-1">Supports: PDF, DOCX, Excel, TXT, CSV (max 16MB)</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- === PROCESSING INDICATOR === -->
+        <section class="text-center mb-8" id="processing-section" style="display: none;">
+            <div class="flex items-center justify-center gap-3">
+                <div class="ice-loader"></div>
+                <span class="text-cool-gray">Processing data...</span>
+            </div>
+        </section>
+
+        <!-- === EXTRACTION PREVIEW === -->
+        <section class="grid md:grid-cols-3 gap-6 mb-12" id="preview-section">
+            <!-- Emails Card -->
+            <div class="data-card">
+                <h3 class="text-lg mb-2">📧 Emails Found</h3>
+                <div class="count-badge mb-3">
+                    <span id="emailCount">0</span> Extracted
+                </div>
+                <div class="progress-container mb-2">
+                    <div class="progress-bar" id="emailBar" style="width: 0%"></div>
+                </div>
+                <div class="text-cool-gray text-xs">Confidence: High ✅</div>
+            </div>
+
+            <!-- Phones Card -->
+            <div class="data-card">
+                <h3 class="text-lg mb-2">📞 Phone Numbers</h3>
+                <div class="count-badge mb-3">
+                    <span id="phoneCount">0</span> Detected
+                </div>
+                <div class="progress-container mb-2">
+                    <div class="progress-bar" id="phoneBar" style="width: 0%"></div>
+                </div>
+                <div class="text-cool-gray text-xs">Confidence: Medium ⚠️</div>
+            </div>
+
+            <!-- Names Card -->
+            <div class="data-card">
+                <h3 class="text-lg mb-2">👤 Full Names</h3>
+                <div class="count-badge mb-3">
+                    <span id="nameCount">0</span> Identified
+                </div>
+                <div class="progress-container mb-2">
+                    <div class="progress-bar" id="nameBar" style="width: 0%"></div>
+                </div>
+                <div class="text-cool-gray text-xs">Confidence: Estimated</div>
+            </div>
+        </section>
+
+        <!-- === ACTION BUTTONS === -->
+        <section class="text-center mb-12">
+            <div class="flex flex-wrap justify-center gap-4">
+                <button id="process-text-btn" class="export-btn">⚡ Process Text</button>
+                <button id="clear-text-btn" class="export-btn">🗑️ Clear All</button>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- === NOTIFICATION SYSTEM === -->
+    <div id="notification-container" class="fixed top-4 right-4 z-50" aria-live="polite"></div>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+        // DOM Elements
+        const input = document.getElementById('text-input');
+        const charCount = document.getElementById('charCount');
+        const wordCount = document.getElementById('wordCount');
+        const lineCount = document.getElementById('lineCount');
+
+        const emailCount = document.getElementById('emailCount');
+        const phoneCount = document.getElementById('phoneCount');
+        const nameCount = document.getElementById('nameCount');
+
+        const emailBar = document.getElementById('emailBar');
+        const phoneBar = document.getElementById('phoneBar');
+        const nameBar = document.getElementById('nameBar');
+
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const processBtn = document.getElementById('process-text-btn');
+        const clearBtn = document.getElementById('clear-text-btn');
+        const processingSection = document.getElementById('processing-section');
+
+        // Regex Patterns
+        const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+        const phoneRegex = /(?:\+?(\d{1,3}))?[-.\s]?\(?(\d{3})\)?[-.\s]?(\d{3})[-.\s]?(\d{4})/g;
+        const nameRegex = /[A-Z][a-z]{2,}\s+[A-Z][a-z]{2,}/g;
+
+        // Update Stats
+        function updateStats() {
+            const text = input.value || '';
+            
+            const emails = text.match(emailRegex) || [];
+            const phones = text.match(phoneRegex) || [];
+            const names = text.match(nameRegex) || [];
+
+            // Animated counters
+            emailCount.textContent = emails.length;
+            phoneCount.textContent = phones.length;
+            nameCount.textContent = names.length;
+
+            // Progress bars
+            const max = Math.max(emails.length, phones.length, names.length, 1);
+            emailBar.style.width = `${(emails.length / max) * 100}%`;
+            phoneBar.style.width = `${(phones.length / max) * 100}%`;
+            nameBar.style.width = `${(names.length / max) * 100}%`;
+
+            // Character stats
+            charCount.textContent = text.length;
+            wordCount.textContent = text.trim() ? text.trim().split(/\s+/).length : 0;
+            lineCount.textContent = text.split('\n').length;
+        }
+
+        // Notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            
+            document.getElementById('notification-container').appendChild(notification);
+            
+            setTimeout(() => notification.classList.add('show'), 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // File upload handling
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = Array.from(e.dataTransfer.files);
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        // Process button
+        processBtn.addEventListener('click', () => {
+            const text = input.value.trim();
+            if (!text) {
+                showNotification('Please enter some text to process', 'warning');
+                return;
+            }
+            
+            processingSection.style.display = 'block';
+            
+            // Simulate processing
+            setTimeout(() => {
+                processingSection.style.display = 'none';
+                
+                // Redirect to results (this will be handled by the original PatternHive logic)
+                if (window.patternHive && window.patternHive.processText) {
+                    window.patternHive.processText();
+                } else {
+                    showNotification('Processing complete! Redirecting to results...', 'success');
+                    // Fallback - you can implement actual processing here
+                }
+            }, 2000);
+        });
+
+        // Clear button
+        clearBtn.addEventListener('click', () => {
+            input.value = '';
+            updateStats();
+            showNotification('Text cleared', 'success');
+        });
+
+        // Handle file upload
+        function handleFileUpload(file) {
+            if (file.size > 16 * 1024 * 1024) {
+                showNotification('File too large. Maximum size is 16MB.', 'error');
+                return;
+            }
+            
+            const allowedTypes = ['.txt', '.pdf', '.docx', '.doc', '.xlsx', '.xls', '.csv'];
+            const fileExt = '.' + file.name.split('.').pop().toLowerCase();
+            if (!allowedTypes.includes(fileExt)) {
+                showNotification('Unsupported file type. Please use: ' + allowedTypes.join(', '), 'error');
+                return;
+            }
+            
+            processingSection.style.display = 'block';
+            
+            // Handle file upload (this will be handled by the original PatternHive logic)
+            if (window.patternHive && window.patternHive.handleFileUpload) {
+                window.patternHive.handleFileUpload(file);
+            } else {
+                showNotification(`File "${file.name}" uploaded successfully!`, 'success');
+                processingSection.style.display = 'none';
+            }
+        }
+
+        // Live update
+        input.addEventListener('input', updateStats);
+
+        // Initialize
+        updateStats();
+    </script>
+</body>
+</html>

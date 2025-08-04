@@ -1,0 +1,427 @@
+/* ===== KEYFRAME ANIMATIONS ===== */
+
+/* Float Animation */
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(2deg); }
+    66% { transform: translateY(-5px) rotate(-1deg); }
+}
+
+/* Pulse Animation */
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+/* Glow Pulse */
+@keyframes glowPulse {
+    0%, 100% { 
+        box-shadow: 0 0 20px rgba(74, 227, 236, 0.3);
+        filter: brightness(1);
+    }
+    50% { 
+        box-shadow: 0 0 30px rgba(74, 227, 236, 0.6);
+        filter: brightness(1.2);
+    }
+}
+
+/* Shimmer Effect */
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+/* Slide In From Right */
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Slide In From Bottom */
+@keyframes slideInBottom {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Fade In */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Scale In */
+@keyframes scaleIn {
+    from {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Bounce In */
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Rotate 3D */
+@keyframes rotate3D {
+    from { transform: rotateY(0deg); }
+    to { transform: rotateY(360deg); }
+}
+
+/* Glitch Effect */
+@keyframes glitch-1 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(-2px, 2px); }
+    40% { transform: translate(-2px, -2px); }
+    60% { transform: translate(2px, 2px); }
+    80% { transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-2 {
+    0%, 100% { transform: translate(0); }
+    20% { transform: translate(2px, -2px); }
+    40% { transform: translate(2px, 2px); }
+    60% { transform: translate(-2px, -2px); }
+    80% { transform: translate(-2px, 2px); }
+}
+
+/* Ice Crystal Growing */
+@keyframes crystalGrow {
+    0% {
+        transform: scale(0) rotate(0deg);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2) rotate(180deg);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1) rotate(360deg);
+        opacity: 1;
+    }
+}
+
+/* Particle Float */
+@keyframes particleFloat {
+    0%, 100% {
+        transform: translateY(0px) translateX(0px) rotate(0deg);
+        opacity: 0.8;
+    }
+    25% {
+        transform: translateY(-10px) translateX(5px) rotate(90deg);
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-20px) translateX(-5px) rotate(180deg);
+        opacity: 0.6;
+    }
+    75% {
+        transform: translateY(-10px) translateX(5px) rotate(270deg);
+        opacity: 1;
+    }
+}
+
+/* Progress Fill */
+@keyframes progressFill {
+    from { width: 0%; }
+    to { width: var(--progress-width, 100%); }
+}
+
+/* Counter Animation */
+@keyframes countUp {
+    from { 
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to { 
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* ===== GLITCH TEXT EFFECT ===== */
+.glitch {
+    position: relative;
+    font-weight: 900;
+    animation: glitch-1 0.5s infinite ease-in-out alternate;
+}
+
+.glitch::before,
+.glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch::before {
+    animation: glitch-2 0.3s infinite ease-in-out alternate;
+    color: #ff00ff;
+    z-index: -1;
+}
+
+.glitch::after {
+    animation: glitch-1 0.2s infinite ease-in-out alternate;
+    color: #00ffff;
+    z-index: -2;
+}
+
+/* ===== ICE CRYSTAL LOADER ===== */
+.ice-crystal {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    animation: crystalGrow 2s infinite ease-in-out;
+}
+
+.ice-crystal::before,
+.ice-crystal::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-primary);
+    clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+}
+
+.ice-crystal::before {
+    animation: rotate3D 3s linear infinite;
+}
+
+.ice-crystal::after {
+    animation: rotate3D 3s linear infinite reverse;
+    opacity: 0.6;
+    transform: scale(0.8);
+}
+
+/* ===== MORPHING BUTTON EFFECT ===== */
+.morphing-btn {
+    overflow: hidden;
+    position: relative;
+}
+
+.morphing-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: var(--transition-medium);
+}
+
+.morphing-btn:hover::before {
+    left: 100%;
+    transition: var(--transition-slow);
+}
+
+/* ===== PARTICLE ANIMATIONS ===== */
+.particle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: var(--color-primary-accent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFloat 3s ease-in-out infinite;
+    opacity: 0.6;
+    z-index: 1;
+}
+
+.particle.large {
+    width: 6px;
+    height: 6px;
+    animation-duration: 4s;
+}
+
+.particle.small {
+    width: 2px;
+    height: 2px;
+    animation-duration: 2s;
+}
+
+/* ===== RESULT CARD ANIMATIONS ===== */
+.result-card {
+    animation: slideInBottom 0.5s ease-out forwards;
+    opacity: 0;
+}
+
+.result-card:nth-child(1) { animation-delay: 0.1s; }
+.result-card:nth-child(2) { animation-delay: 0.2s; }
+.result-card:nth-child(3) { animation-delay: 0.3s; }
+.result-card:nth-child(4) { animation-delay: 0.4s; }
+
+/* ===== STAT COUNTER ANIMATIONS ===== */
+.stat-number {
+    animation: countUp 0.8s ease-out forwards;
+}
+
+/* ===== HOVER 3D TRANSFORMS ===== */
+.hover-3d {
+    transition: var(--transition-medium);
+    transform-style: preserve-3d;
+}
+
+.hover-3d:hover {
+    transform: perspective(1000px) rotateX(10deg) rotateY(10deg) translateZ(20px);
+}
+
+/* ===== SHIMMER LOADING EFFECT ===== */
+.shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.shimmer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    animation: shimmer 2s infinite;
+}
+
+/* ===== PROGRESS BAR ANIMATION ===== */
+.progress-fill.animated {
+    animation: progressFill 1s ease-out forwards;
+}
+
+/* ===== NOTIFICATION ANIMATIONS ===== */
+.notification {
+    animation: slideInRight 0.3s ease-out forwards;
+}
+
+.notification.removing {
+    animation: slideInRight 0.3s ease-in reverse forwards;
+}
+
+/* ===== GLASS CARD ENTRANCE ===== */
+.glass-card.animate-in {
+    animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* ===== TYPING INDICATOR ===== */
+.typing-dots {
+    display: inline-flex;
+    gap: 4px;
+}
+
+.typing-dot {
+    width: 6px;
+    height: 6px;
+    background: var(--color-primary-accent);
+    border-radius: 50%;
+    animation: pulse 1.4s ease-in-out infinite both;
+}
+
+.typing-dot:nth-child(1) { animation-delay: -0.32s; }
+.typing-dot:nth-child(2) { animation-delay: -0.16s; }
+.typing-dot:nth-child(3) { animation-delay: 0s; }
+
+/* ===== RESPONSIVE ANIMATIONS ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .glitch::before,
+    .glitch::after {
+        display: none;
+    }
+    
+    .particle {
+        display: none;
+    }
+}
+
+/* ===== SCROLL-TRIGGERED ANIMATIONS ===== */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.6s ease-out;
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ===== MICRO-INTERACTIONS ===== */
+.micro-bounce:active {
+    transform: scale(0.95);
+    transition: transform 0.1s ease-out;
+}
+
+.micro-glow:hover {
+    animation: glowPulse 2s ease-in-out infinite;
+}
+
+/* ===== LOADING STATES ===== */
+.loading-skeleton {
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.1) 25%, 
+        rgba(255, 255, 255, 0.2) 50%, 
+        rgba(255, 255, 255, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* ===== THEME TRANSITIONS ===== */
+.theme-transition {
+    transition: all 0.3s ease-in-out;
+}
+
+/* ===== ADVANCED HOVER EFFECTS ===== */
+.tilt-card {
+    transition: transform 0.3s ease-out;
+}
+
+.tilt-card:hover {
+    transform: perspective(1000px) rotateX(5deg) rotateY(5deg) scale(1.02);
+}
+
+/* ===== FOCUS ANIMATIONS ===== */
+.focus-ring:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 227, 236, 0.4);
+    animation: glowPulse 2s ease-in-out infinite;
+}
