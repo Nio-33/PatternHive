@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body {
-            background: linear-gradient(135deg, #060609 0%, #0d0d17 25%, #0b101f 50%, #071a30 75%, #291a41 100%);
+            background: linear-gradient(135deg, #030305 0%, #07070c 25%, #050812 50%, #041118 75%, #1a0f28 100%);
             background-attachment: fixed;
             color: #F6F8FA;
             font-family: 'Inter', sans-serif;
@@ -300,10 +300,98 @@
             animation: none;
         }
 
+        /* Shooting stars */
+        .shooting-star {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #fff, #4AE3EC);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: -1;
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 300px;
+            height: 1px;
+            background: linear-gradient(90deg, #4AE3EC, transparent);
+            transform: translateY(-50%);
+        }
+
+        .shooting-star:nth-child(1) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 5s;
+            top: 20%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(2) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 15s;
+            top: 60%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(3) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 25s;
+            top: 80%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(4) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 35s;
+            top: 30%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(5) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 40s;
+            top: 70%;
+            left: 0%;
+        }
+
+        @keyframes shooting-star-cycle {
+            0% {
+                transform: translate(-200px, -200px) rotate(45deg);
+                opacity: 0;
+            }
+            2% {
+                opacity: 1;
+            }
+            8% {
+                transform: translate(100vw, 100vh) rotate(45deg);
+                opacity: 1;
+            }
+            10% {
+                transform: translate(100vw, 100vh) rotate(45deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-200px, -200px) rotate(45deg);
+                opacity: 0;
+            }
+        }
+
         /* Export section without block styling */
     </style>
 </head>
 <body class="text-ice-white min-h-screen">
+
+    <!-- Shooting stars -->
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
 
     <div class="content px-6 py-12 max-w-6xl mx-auto">
 

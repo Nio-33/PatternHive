@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="PatternHive - Intelligent data extraction tool for emails, phones, and names with futuristic UI and real-time processing">
-    <meta name="keywords" content="data extraction, regex, email extraction, phone extraction, name extraction">
-    <title>PatternHive | Igloo-Inspired Extraction Tool</title>
+    <meta name="description" content="PatternHive - Intelligent data processing tool for emails, phones, and names with futuristic UI and real-time processing">
+    <meta name="keywords" content="data processing, regex, email processing, phone processing, name processing">
+    <title>PatternHive | Igloo-Inspired Processing Tool</title>
     
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -39,7 +39,7 @@
 
     <style>
         body {
-            background: linear-gradient(135deg, #060609 0%, #0d0d17 25%, #0b101f 50%, #071a30 75%, #291a41 100%);
+            background: linear-gradient(135deg, #030305 0%, #07070c 25%, #050812 50%, #041118 75%, #1a0f28 100%);
             background-attachment: fixed;
             color: #F6F8FA;
             font-family: 'Inter', sans-serif;
@@ -88,6 +88,87 @@
                 radial-gradient(ellipse at 40% 80%, rgba(120, 219, 255, 0.06) 0%, transparent 50%);
             z-index: -1;
             pointer-events: none;
+        }
+
+        /* Shooting stars */
+        .shooting-star {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(45deg, #fff, #4AE3EC);
+            border-radius: 50%;
+            opacity: 0;
+            z-index: -1;
+        }
+
+        .shooting-star::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            width: 300px;
+            height: 1px;
+            background: linear-gradient(90deg, #4AE3EC, transparent);
+            transform: translateY(-50%);
+        }
+
+        .shooting-star:nth-child(1) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 5s;
+            top: 20%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(2) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 15s;
+            top: 60%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(3) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 25s;
+            top: 80%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(4) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 35s;
+            top: 30%;
+            left: 0%;
+        }
+
+        .shooting-star:nth-child(5) {
+            animation: shooting-star-cycle 45s linear infinite;
+            animation-delay: 40s;
+            top: 70%;
+            left: 0%;
+        }
+
+        @keyframes shooting-star-cycle {
+            0% {
+                transform: translate(-200px, -200px) rotate(45deg);
+                opacity: 0;
+            }
+            2% {
+                opacity: 1;
+            }
+            8% {
+                transform: translate(100vw, 100vh) rotate(45deg);
+                opacity: 1;
+            }
+            10% {
+                transform: translate(100vw, 100vh) rotate(45deg);
+                opacity: 0;
+            }
+            100% {
+                transform: translate(-200px, -200px) rotate(45deg);
+                opacity: 0;
+            }
         }
 
         h1, h2, h3, .glitch-text {
@@ -552,6 +633,13 @@
 </head>
 <body class="charcoal text-ice-white min-h-screen">
 
+    <!-- Shooting stars -->
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+    <div class="shooting-star"></div>
+
     <div class="content px-6 py-12 max-w-6xl mx-auto relative z-10">
 
         <!-- === HERO SECTION === -->
@@ -606,7 +694,7 @@
             </div>
             <div class="text-center">
                 <button id="extract-btn" class="px-12 py-4 rounded-full bg-gray-800 text-white text-xl font-medium hover:bg-gray-700 transition-colors">
-                    Extract File
+                    Process File
                 </button>
             </div>
         </section>
@@ -706,7 +794,7 @@
     <!-- === FOOTER === -->
     <footer class="text-center py-8 mt-12">
         <p class="text-cool-gray text-sm">
-            PatternHive: revolutionizing data pattern extraction | <em>powered by <a href="#" class="text-electric-blue hover:underline" onclick="showNotification('Niostudio link not yet configured', 'warning'); return false;">Niostudio</a></em>
+            PatternHive: revolutionizing data pattern processing | <em>powered by <a href="#" class="text-electric-blue hover:underline" onclick="showNotification('Niostudio link not yet configured', 'warning'); return false;">Niostudio</a></em>
         </p>
     </footer>
 
@@ -813,7 +901,7 @@
                 console.error('Processing error:', error);
                 showNotification('Network error. Please try again.', 'error');
             } finally {
-                extractBtn.textContent = 'Extract File';
+                extractBtn.textContent = 'Process File';
                 extractBtn.disabled = false;
                 processingSection.style.display = 'none';
             }
@@ -933,7 +1021,7 @@
                 console.error('Upload error:', error);
                 showNotification('Network error. Please try again.', 'error');
             } finally {
-                extractBtn.textContent = 'Extract File';
+                extractBtn.textContent = 'Process File';
                 extractBtn.disabled = false;
                 processingSection.style.display = 'none';
             }

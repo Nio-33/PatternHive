@@ -4,6 +4,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const filterControlsEl = document.getElementById('filter-controls');
     const resultsContainerEl = document.getElementById('results-container');
     const emptyStateEl = document.getElementById('empty-state');
+    
+    // Global variables to store results and current filter
+    let globalResults = null;
+    let currentFilter = 'all';
 
     // Get session ID from localStorage (set by homepage)
     const sessionId = localStorage.getItem('patternhive_session');
@@ -26,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         
         const results = await response.json();
+        globalResults = results; // Store results globally
         
         // Display results
         displayStats(results, filename, textInput);
@@ -184,6 +189,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     }
 
+    function getFilteredData(results, filter) {
+        if (filter === 'all') {
+            return results;
+        }
+        
+        // Return only the selected data type
+        const filteredResults = {};
+        if (filter === 'emails' && results.emails) {
+            filteredResults.emails = results.emails;
+        } else if (filter === 'phones' && results.phones) {
+            filteredResults.phones = results.phones;
+        } else if (filter === 'names' && results.names) {
+            filteredResults.names = results.names;
+        }
+        
+        return filteredResults;
+    }
+
     function setupFilters() {
         const filterButtons = document.querySelectorAll('.filter-btn');
         const resultsSections = document.querySelectorAll('.results-section');
@@ -195,6 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 btn.classList.add('active');
                 
                 const filter = btn.dataset.filter;
+                currentFilter = filter; // Update global filter state
                 
                 // Show/hide sections based on filter
                 resultsSections.forEach(section => {
@@ -228,12 +252,116 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Add export functionality
         document.getElementById('export-csv').addEventListener('click', () => {
-            window.location.href = `/api/export/csv/${sessionId}`;
+            exportFilteredData('csv', sessionId);
         });
         
         document.getElementById('export-json').addEventListener('click', () => {
-            window.location.href = `/api/export/json/${sessionId}`;
+            exportFilteredData('json', sessionId);
         });
+    }
+
+    function exportFilteredData(format, sessionId) {
+        if (!globalResults) {
+            console.error('No results available for export');
+            return;
+        }
+
+        const filteredData = getFilteredData(globalResults, currentFilter);
+        
+        if (format === 'csv') {
+            exportAsCSV(filteredData);
+        } else if (format === 'json') {
+            exportAsJSON(filteredData);
+        }
+    }
+
+    function exportAsCSV(data) {
+        let csvContent = '';
+        const filename = `patternhive_${currentFilter}_${new Date().toISOString().split('T')[0]}.csv`;
+        
+        // CSV Headers and data based on current filter
+        if (currentFilter === 'all') {
+            // Export all data types
+            csvContent = 'Type,Value,Additional Info\n';
+            
+            if (data.emails) {
+                data.emails.forEach(email => {
+                    const emailValue = typeof email === 'object' ? email.email : email;
+                    const domain = typeof email === 'object' ? email.domain : '';
+                    const valid = typeof email === 'object' ? email.valid : true;
+                    csvContent += `Email,"${emailValue}","Domain: ${domain}, Valid: ${valid}"\n`;
+                });
+            }
+            
+            if (data.phones) {
+                data.phones.forEach(phone => {
+                    const phoneValue = typeof phone === 'object' ? phone.formatted : phone;
+                    const country = typeof phone === 'object' ? phone.country : '';
+                    const valid = typeof phone === 'object' ? phone.valid : true;
+                    csvContent += `Phone,"${phoneValue}","Country: ${country}, Valid: ${valid}"\n`;
+                });
+            }
+            
+            if (data.names) {
+                data.names.forEach(name => {
+                    const nameValue = typeof name === 'object' ? name.name : name;
+                    const confidence = typeof name === 'object' ? name.confidence : 0.5;
+                    const nameType = typeof name === 'object' ? name.type : 'unknown';
+                    csvContent += `Name,"${nameValue}","Type: ${nameType}, Confidence: ${(confidence * 100).toFixed(0)}%"\n`;
+                });
+            }
+        } else if (currentFilter === 'emails' && data.emails) {
+            csvContent = 'Email,Domain,Valid\n';
+            data.emails.forEach(email => {
+                const emailValue = typeof email === 'object' ? email.email : email;
+                const domain = typeof email === 'object' ? email.domain : '';
+                const valid = typeof email === 'object' ? email.valid : true;
+                csvContent += `"${emailValue}","${domain}","${valid}"\n`;
+            });
+        } else if (currentFilter === 'phones' && data.phones) {
+            csvContent = 'Phone Number,Country,Valid\n';
+            data.phones.forEach(phone => {
+                const phoneValue = typeof phone === 'object' ? phone.formatted : phone;
+                const country = typeof phone === 'object' ? phone.country : '';
+                const valid = typeof phone === 'object' ? phone.valid : true;
+                csvContent += `"${phoneValue}","${country}","${valid}"\n`;
+            });
+        } else if (currentFilter === 'names' && data.names) {
+            csvContent = 'Name,Type,Confidence\n';
+            data.names.forEach(name => {
+                const nameValue = typeof name === 'object' ? name.name : name;
+                const confidence = typeof name === 'object' ? name.confidence : 0.5;
+                const nameType = typeof name === 'object' ? name.type : 'unknown';
+                csvContent += `"${nameValue}","${nameType}","${(confidence * 100).toFixed(0)}%"\n`;
+            });
+        }
+        
+        // Create and trigger download
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function exportAsJSON(data) {
+        const filename = `patternhive_${currentFilter}_${new Date().toISOString().split('T')[0]}.json`;
+        const jsonContent = JSON.stringify(data, null, 2);
+        
+        // Create and trigger download
+        const blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+        const link = document.createElement('a');
+        const url = URL.createObjectURL(blob);
+        link.setAttribute('href', url);
+        link.setAttribute('download', filename);
+        link.style.visibility = 'hidden';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     function showEmptyState() {
