@@ -39,7 +39,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <style>
         body {
-            background: linear-gradient(135deg, #030305 0%, #07070c 25%, #050812 50%, #041118 75%, #1a0f28 100%);
+            background: linear-gradient(135deg, #000000 0%, #010101 25%, #010103 50%, #010205 75%, #050307 100%);
             background-attachment: fixed;
             color: #F6F8FA;
             font-family: 'Inter', sans-serif;
@@ -129,14 +129,12 @@
         .filter-btn.active {
             background-color: #4AE3EC;
             color: #0D0D0D;
-            box-shadow: 0 0 15px #4AE3EC50;
         }
 
         /* === GLITCH TEXT EFFECT === */
         .glitch-text {
             position: relative;
-            color: #F6F8FA;
-            text-shadow: 0 0 5px #4AE3EC;
+            color: #8B9196;
             display: inline-block;
         }
 
@@ -151,13 +149,11 @@
 
         .glitch-text::before {
             left: 2px;
-            text-shadow: 0 0 5px #FF00FF;
             animation: glitch-1 3s infinite alternate;
         }
 
         .glitch-text::after {
             left: -2px;
-            text-shadow: 0 0 5px #00FFFF;
             animation: glitch-2 2s infinite alternate;
         }
 
@@ -176,7 +172,6 @@
             background-color: rgba(26, 27, 35, 0.8) !important;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(74, 227, 236, 0.1);
             border: 1px solid rgba(74, 227, 236, 0.08);
             transition: all 0.4s ease;
         }
@@ -185,7 +180,6 @@
             background-color: rgba(26, 27, 35, 0.9) !important;
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
-            box-shadow: 0 8px 25px rgba(74, 227, 236, 0.2);
             border: 1px solid rgba(74, 227, 236, 0.12);
             transform: translateY(-2px) scale(1.05);
         }
@@ -193,7 +187,6 @@
         .filter-btn.active {
             background-color: #4AE3EC !important;
             color: #0D0D0D !important;
-            box-shadow: 0 8px 30px rgba(74, 227, 236, 0.3) !important;
             border: 1px solid rgba(74, 227, 236, 0.2) !important;
         }
 
@@ -210,7 +203,6 @@
             position: relative;
             overflow: hidden;
             box-shadow: 
-                0 10px 35px rgba(74, 227, 236, 0.12),
                 0 4px 15px rgba(0, 0, 0, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.25);
@@ -222,8 +214,6 @@
             -webkit-backdrop-filter: blur(22px) saturate(250%);
             transform: translateY(-6px) rotateX(5deg);
             box-shadow: 
-                0 15px 45px rgba(74, 227, 236, 0.18),
-                0 8px 25px rgba(76, 111, 255, 0.12),
                 0 6px 20px rgba(0, 0, 0, 0.3),
                 inset 0 2px 0 rgba(255, 255, 255, 0.2),
                 inset 0 -2px 0 rgba(0, 0, 0, 0.35);
@@ -244,7 +234,6 @@
             backdrop-filter: blur(15px) saturate(180%);
             -webkit-backdrop-filter: blur(15px) saturate(180%);
             box-shadow: 
-                0 8px 32px rgba(74, 227, 236, 0.12),
                 inset 0 1px 0 rgba(255, 255, 255, 0.1),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(74, 227, 236, 0.08) !important;
@@ -256,11 +245,35 @@
             backdrop-filter: blur(20px) saturate(200%);
             -webkit-backdrop-filter: blur(20px) saturate(200%);
             box-shadow: 
-                0 12px 40px rgba(74, 227, 236, 0.18),
                 inset 0 1px 0 rgba(255, 255, 255, 0.15),
                 inset 0 -1px 0 rgba(0, 0, 0, 0.3);
             border: 1px solid rgba(74, 227, 236, 0.15) !important;
             transform: translateY(-3px);
+        }
+
+        /* Mouse glow effect */
+        .mouse-glow {
+            position: fixed;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(74, 227, 236, 0.3) 0%, rgba(74, 227, 236, 0.1) 50%, transparent 70%);
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            mix-blend-mode: screen;
+        }
+
+        .mouse-glow.active {
+            opacity: 1;
+        }
+
+        .mouse-glow.large {
+            width: 60px;
+            height: 60px;
+            background: radial-gradient(circle, rgba(74, 227, 236, 0.4) 0%, rgba(74, 227, 236, 0.15) 50%, transparent 70%);
         }
 
         /* Floating animations */
@@ -313,6 +326,26 @@
             z-index: -1;
         }
 
+        /* Floating Meteor Rock */
+        .meteor {
+            position: fixed;
+            top: 20%;
+            left: -50px;
+            width: 20px;
+            height: 16px;
+            background: 
+                radial-gradient(ellipse at 35% 25%, #696969 0%, #4A4A4A 30%, #2F2F2F 60%, #1C1C1C 100%),
+                radial-gradient(ellipse at 70% 40%, #8B7355 0%, transparent 40%),
+                radial-gradient(ellipse at 20% 80%, #5D4E37 0%, transparent 30%);
+            border-radius: 45% 55% 65% 35%;
+            opacity: 0;
+            z-index: -1;
+            box-shadow: 
+                2px 4px 8px rgba(0,0,0,0.3),
+                inset -3px -3px 6px rgba(0,0,0,0.4),
+                inset 2px 2px 4px rgba(105,105,105,0.2);
+        }
+
         .shooting-star::before {
             content: '';
             position: absolute;
@@ -325,60 +358,115 @@
         }
 
         .shooting-star:nth-child(1) {
-            animation: shooting-star-cycle 45s linear infinite;
-            animation-delay: 5s;
-            top: 20%;
-            left: 0%;
+            animation: shooting-star-cycle-1 100s linear infinite;
+            animation-delay: 10s;
         }
 
         .shooting-star:nth-child(2) {
-            animation: shooting-star-cycle 45s linear infinite;
-            animation-delay: 15s;
-            top: 60%;
-            left: 0%;
+            animation: shooting-star-cycle-2 100s linear infinite;
+            animation-delay: 30s;
         }
 
         .shooting-star:nth-child(3) {
-            animation: shooting-star-cycle 45s linear infinite;
-            animation-delay: 25s;
-            top: 80%;
-            left: 0%;
+            animation: shooting-star-cycle-3 100s linear infinite;
+            animation-delay: 50s;
         }
 
         .shooting-star:nth-child(4) {
-            animation: shooting-star-cycle 45s linear infinite;
-            animation-delay: 35s;
-            top: 30%;
-            left: 0%;
+            animation: shooting-star-cycle-4 100s linear infinite;
+            animation-delay: 70s;
         }
 
         .shooting-star:nth-child(5) {
-            animation: shooting-star-cycle 45s linear infinite;
-            animation-delay: 40s;
-            top: 70%;
-            left: 0%;
+            animation: shooting-star-cycle-5 100s linear infinite;
+            animation-delay: 85s;
         }
 
-        @keyframes shooting-star-cycle {
-            0% {
-                transform: translate(-200px, -200px) rotate(45deg);
-                opacity: 0;
-            }
-            2% {
-                opacity: 1;
-            }
-            8% {
-                transform: translate(100vw, 100vh) rotate(45deg);
-                opacity: 1;
-            }
-            10% {
-                transform: translate(100vw, 100vh) rotate(45deg);
-                opacity: 0;
-            }
-            100% {
-                transform: translate(-200px, -200px) rotate(45deg);
-                opacity: 0;
-            }
+        /* Shooting star from top-left to bottom-right */
+        @keyframes shooting-star-cycle-1 {
+            0% { transform: translate(-200px, -100px) rotate(45deg); opacity: 0; }
+            1% { opacity: 1; }
+            4% { transform: translate(100vw, 100vh) rotate(45deg); opacity: 1; }
+            5% { opacity: 0; }
+            100% { transform: translate(-200px, -100px) rotate(45deg); opacity: 0; }
+        }
+
+        /* Shooting star from top-right to bottom-left */
+        @keyframes shooting-star-cycle-2 {
+            0% { transform: translate(calc(100vw + 200px), -100px) rotate(135deg); opacity: 0; }
+            1% { opacity: 1; }
+            4% { transform: translate(-200px, 100vh) rotate(135deg); opacity: 1; }
+            5% { opacity: 0; }
+            100% { transform: translate(calc(100vw + 200px), -100px) rotate(135deg); opacity: 0; }
+        }
+
+        /* Shooting star from left to right horizontally */
+        @keyframes shooting-star-cycle-3 {
+            0% { transform: translate(-200px, 30vh) rotate(0deg); opacity: 0; }
+            1% { opacity: 1; }
+            4% { transform: translate(calc(100vw + 200px), 35vh) rotate(0deg); opacity: 1; }
+            5% { opacity: 0; }
+            100% { transform: translate(-200px, 30vh) rotate(0deg); opacity: 0; }
+        }
+
+        /* Shooting star from bottom-left to top-right */
+        @keyframes shooting-star-cycle-4 {
+            0% { transform: translate(-200px, calc(100vh + 100px)) rotate(-45deg); opacity: 0; }
+            1% { opacity: 1; }
+            4% { transform: translate(100vw, -200px) rotate(-45deg); opacity: 1; }
+            5% { opacity: 0; }
+            100% { transform: translate(-200px, calc(100vh + 100px)) rotate(-45deg); opacity: 0; }
+        }
+
+        /* Shooting star from top to bottom vertically */
+        @keyframes shooting-star-cycle-5 {
+            0% { transform: translate(60vw, -200px) rotate(90deg); opacity: 0; }
+            1% { opacity: 1; }
+            4% { transform: translate(65vw, calc(100vh + 200px)) rotate(90deg); opacity: 1; }
+            5% { opacity: 0; }
+            100% { transform: translate(60vw, -200px) rotate(90deg); opacity: 0; }
+        }
+
+        /* Floating rock from left to right */
+        @keyframes floating-rock-1 {
+            0% { transform: translate(-50px, 20vh) rotate(0deg); opacity: 0; }
+            2% { opacity: 1; }
+            50% { transform: translate(50vw, 15vh) rotate(180deg); opacity: 1; }
+            98% { transform: translate(calc(100vw + 50px), 25vh) rotate(360deg); opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Floating rock from right to left */
+        @keyframes floating-rock-2 {
+            0% { transform: translate(calc(100vw + 50px), 60vh) rotate(0deg); opacity: 0; }
+            2% { opacity: 1; }
+            50% { transform: translate(50vw, 55vh) rotate(-180deg); opacity: 1; }
+            98% { transform: translate(-50px, 65vh) rotate(-360deg); opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        /* Floating rock from top to bottom */
+        @keyframes floating-rock-3 {
+            0% { transform: translate(30vw, -50px) rotate(0deg); opacity: 0; }
+            2% { opacity: 1; }
+            50% { transform: translate(35vw, 50vh) rotate(180deg); opacity: 1; }
+            98% { transform: translate(40vw, calc(100vh + 50px)) rotate(360deg); opacity: 1; }
+            100% { opacity: 0; }
+        }
+
+        .meteor {
+            animation: floating-rock-1 95s ease-in-out infinite;
+            animation-delay: 15s;
+        }
+
+        .meteor:nth-child(7) {
+            animation: floating-rock-2 95s ease-in-out infinite;
+            animation-delay: 45s;
+        }
+
+        .meteor:nth-child(8) {
+            animation: floating-rock-3 95s ease-in-out infinite;
+            animation-delay: 75s;
         }
 
         /* Export section without block styling */
@@ -386,12 +474,20 @@
 </head>
 <body class="text-ice-white min-h-screen">
 
+    <!-- Mouse glow effect -->
+    <div class="mouse-glow" id="mouse-glow"></div>
+
     <!-- Shooting stars -->
     <div class="shooting-star"></div>
     <div class="shooting-star"></div>
     <div class="shooting-star"></div>
     <div class="shooting-star"></div>
     <div class="shooting-star"></div>
+
+    <!-- Meteor rocks -->
+    <div class="meteor"></div>
+    <div class="meteor"></div>
+    <div class="meteor"></div>
 
     <div class="content px-6 py-12 max-w-6xl mx-auto">
 
@@ -437,6 +533,76 @@
             PatternHive: revolutionizing data pattern extraction | <em>powered by <a href="#" class="text-electric-blue hover:underline">Niostudio</a></em>
         </p>
     </footer>
+
+    <script>
+        // Mouse glow effect
+        const mouseGlow = document.getElementById('mouse-glow');
+        let isGlowActive = false;
+
+        // Define interactive elements that should trigger the glow
+        const interactiveSelectors = [
+            '.filter-btn',
+            '.data-card',
+            'button',
+            'input',
+            'textarea',
+            '.btn',
+            'a',
+            '.nav-link'
+        ];
+
+        // Track mouse movement
+        document.addEventListener('mousemove', (e) => {
+            mouseGlow.style.left = e.clientX + 'px';
+            mouseGlow.style.top = e.clientY + 'px';
+        });
+
+        // Function to show glow
+        function showGlow(large = false) {
+            if (!isGlowActive) {
+                isGlowActive = true;
+                mouseGlow.classList.add('active');
+                if (large) {
+                    mouseGlow.classList.add('large');
+                }
+            }
+        }
+
+        // Function to hide glow
+        function hideGlow() {
+            if (isGlowActive) {
+                isGlowActive = false;
+                mouseGlow.classList.remove('active', 'large');
+            }
+        }
+
+        // Add event listeners to interactive elements
+        function addGlowListeners() {
+            interactiveSelectors.forEach(selector => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    element.addEventListener('mouseenter', () => {
+                        const isLarge = element.matches('button, .filter-btn, .btn');
+                        showGlow(isLarge);
+                    });
+                    element.addEventListener('mouseleave', hideGlow);
+                });
+            });
+        }
+
+        // Initialize glow listeners when DOM is loaded
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', addGlowListeners);
+        } else {
+            addGlowListeners();
+        }
+
+        // Re-add listeners when new elements are dynamically added
+        const observer = new MutationObserver(() => {
+            addGlowListeners();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+    </script>
 
     <script src="{{ url_for('static', filename='js/results.js') }}"></script>
 </body>

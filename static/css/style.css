@@ -21,7 +21,7 @@
     /* Gradients */
     --gradient-primary: linear-gradient(135deg, var(--color-primary-accent), var(--color-secondary-accent));
     --gradient-glass: linear-gradient(135deg, rgba(8, 145, 178, 0.1), rgba(59, 130, 246, 0.05));
-    --gradient-glow: radial-gradient(circle, var(--color-primary-accent), transparent);
+    --gradient-glow: transparent;
     
     /* Typography */
     --font-primary: 'Orbitron', monospace;
@@ -39,8 +39,8 @@
     
     /* Effects */
     --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.1);
-    --shadow-glow: 0 0 20px rgba(8, 145, 178, 0.3);
-    --shadow-hover: 0 12px 40px rgba(8, 145, 178, 0.2);
+    --shadow-glow: none;
+    --shadow-hover: none;
     
     /* Transitions */
     --transition-fast: 0.2s ease;

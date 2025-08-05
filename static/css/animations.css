@@ -16,12 +16,10 @@
 /* Glow Pulse */
 @keyframes glowPulse {
     0%, 100% { 
-        box-shadow: 0 0 20px rgba(74, 227, 236, 0.3);
-        filter: brightness(1);
+        transform: scale(1);
     }
     50% { 
-        box-shadow: 0 0 30px rgba(74, 227, 236, 0.6);
-        filter: brightness(1.2);
+        transform: scale(1.02);
     }
 }
 
@@ -391,7 +389,7 @@
 }
 
 .micro-glow:hover {
-    animation: glowPulse 2s ease-in-out infinite;
+    animation: none;
 }
 
 /* ===== LOADING STATES ===== */
@@ -422,6 +420,6 @@
 /* ===== FOCUS ANIMATIONS ===== */
 .focus-ring:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(74, 227, 236, 0.4);
-    animation: glowPulse 2s ease-in-out infinite;
+    box-shadow: 0 0 0 3px rgba(74, 227, 236, 0.2);
+    animation: none;
 }
