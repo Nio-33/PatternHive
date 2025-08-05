@@ -53,7 +53,7 @@
             position: fixed;
             top: 0;
             left: 0;
-            width: 100%;
+            width: 120%;
             height: 100%;
             background-image: 
                 radial-gradient(2px 2px at 20px 30px, #eee, transparent),
@@ -759,7 +759,7 @@
             </div>
             <div class="text-center">
                 <button id="extract-btn" class="px-12 py-4 rounded-full bg-gray-800 text-white text-xl font-medium hover:bg-gray-700 transition-colors">
-                    Process File
+                    Extract File
                 </button>
             </div>
         </section>
@@ -930,10 +930,14 @@
 
         // Process text function
         async function processText(text) {
+            console.log('Starting text processing...');
             extractBtn.textContent = 'Processing...';
             extractBtn.disabled = true;
             
             try {
+                console.log('Sending API request to /api/extract');
+                console.log('Current URL:', window.location.href);
+                console.log('Request URL will be:', window.location.origin + '/api/extract');
                 const response = await fetch('/api/extract', {
                     method: 'POST',
                     headers: {
@@ -942,24 +946,30 @@
                     body: JSON.stringify({ text: text })
                 });
                 
+                console.log('Response received:', response.status);
                 const result = await response.json();
+                console.log('Result parsed:', result);
                 
                 if (response.ok) {
+                    console.log('Success! Storing session and redirecting...');
                     localStorage.setItem('patternhive_session', result.session_id);
                     localStorage.setItem('patternhive_text_input', text);
                     
                     // Redirect immediately to results page
+                    console.log('Redirecting to /results');
                     window.location.href = '/results';
+                    return; // Exit early to prevent finally block
                 } else {
                     showNotification(result.error || 'Error processing text', 'error');
                 }
             } catch (error) {
                 console.error('Processing error:', error);
                 showNotification('Network error. Please try again.', 'error');
-            } finally {
-                extractBtn.textContent = 'Process File';
-                extractBtn.disabled = false;
             }
+            
+            // Reset button state (only runs if not redirecting)
+            extractBtn.textContent = 'Extract File';
+            extractBtn.disabled = false;
         }
 
         // File notification system
@@ -1042,6 +1052,7 @@
             }
             
             // Update button state
+            console.log('Starting file upload processing...');
             extractBtn.textContent = 'Processing...';
             extractBtn.disabled = true;
             
@@ -1050,21 +1061,29 @@
                 const formData = new FormData();
                 formData.append('file', file);
                 
+                console.log('Sending file to /api/upload');
+                console.log('Current URL:', window.location.href);
+                console.log('Upload URL will be:', window.location.origin + '/api/upload');
                 // Send to backend API
                 const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData
                 });
                 
+                console.log('Upload response received:', response.status);
                 const result = await response.json();
+                console.log('Upload result parsed:', result);
                 
                 if (response.ok) {
                     // Success - store session ID and redirect to results immediately
+                    console.log('File upload success! Storing session and redirecting...');
                     localStorage.setItem('patternhive_session', result.session_id);
                     localStorage.setItem('patternhive_filename', result.filename);
                     
                     // Redirect immediately to results page
+                    console.log('Redirecting to /results');
                     window.location.href = '/results';
+                    return; // Exit early to prevent finally block
                     
                 } else {
                     // Error from server
@@ -1074,10 +1093,11 @@
             } catch (error) {
                 console.error('Upload error:', error);
                 showNotification('Network error. Please try again.', 'error');
-            } finally {
-                extractBtn.textContent = 'Process File';
-                extractBtn.disabled = false;
             }
+            
+            // Reset button state (only runs if not redirecting)
+            extractBtn.textContent = 'Extract File';
+            extractBtn.disabled = false;
         }
 
         // Drag and drop functionality
